@@ -14,7 +14,7 @@ const WindowWrapper = (Component, windowKey) => {
         const element = ref.current;
         if(!element || !isOpen) return; 
 
-        element.style.display = "block";
+        // element.style.display = "block";         Redundancy? 
         // animation to open windows
         gsap.fromTo(
             element,
@@ -29,7 +29,9 @@ const WindowWrapper = (Component, windowKey) => {
         const element = ref.current; 
 
         if(!element) return; 
-        Draggable.create(element, {onPress: () => focusWindow(windowKey)})
+        const [instance] = Draggable.create(element, {onPress: () => focusWindow(windowKey)});
+
+        return () => instance.kill(); 
     }, []);
 
     useLayoutEffect(() => {
