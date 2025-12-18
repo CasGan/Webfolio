@@ -13,8 +13,6 @@ const WindowWrapper = (Component, windowKey) => {
     useGSAP(() => {
         const element = ref.current;
         if(!element || !isOpen) return; 
-
-        // element.style.display = "block";         Redundancy? 
         // animation to open windows
         gsap.fromTo(
             element,
