@@ -81,7 +81,7 @@ const Welcome = () => {
       <p ref={subtitleRef}>
         {renderText(
           "Hey, I'm Cassandra! Welcome to my",
-          "text-3xl font-georama",
+          "text-4xl font-georama",
           FONT_WEIGHTS.subtitle.default
         )}
       </p>

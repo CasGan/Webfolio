@@ -1,3 +1,4 @@
 import Terminal from "./Terminal.jsx";
+import Browser from "./Browser.jsx";
 
-export {Terminal}
+export {Terminal, Browser};
