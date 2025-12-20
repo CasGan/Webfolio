@@ -334,14 +334,20 @@ body {
       }
     }
   }
-
   #resume {
-    @apply w-fit h-fit absolute top-16 left-7/12 bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;
+    @apply w-fit min-w-[700px] h-fit min-h-[900px] absolute top-16 left-7/12 
+         bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;
 
+    /* Window header */
     #window-header {
       h2 {
         @apply font-bold text-sm text-center flex-1;
       }
+    }
+
+    /* Content wrapper to center loading/error states */
+    .resume-content {
+      @apply flex items-center justify-center p-4 w-full h-full;
     }
   }
 

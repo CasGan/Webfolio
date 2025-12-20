@@ -1,40 +1,74 @@
-import { Download, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
+import { Download } from "lucide-react";
 
-const ResumeDownload = ({ disabled, filePath }) => {
-  const [showError, setShowError] = useState(false);
+const isSafeFilePath = (path) => {
+  return (
+    typeof path === "string" &&
+    path.startsWith("/") &&
+    !path.startsWith("//")
+  );
+};
+
+const ResumeDownload = ({
+  disabled,
+  filePath,
+  fileName = "Resume.pdf",
+}) => {
+  const tooltipId = useId();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleClick = () => {
-    if (disabled) {
-      setShowError(true);
-      setTimeout(() => setShowError(false), 1600);
+    if (disabled || !isSafeFilePath(filePath)) {
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 1500);
       return;
     }
-    const link = document.createElement("a");
-    link.href = filePath;
-    link.download = ""; 
-    document.body.appendChild(link);
-    link.click(); 
-    document.body.removeChild(link);
+
+    try {
+      const link = document.createElement("a");
+      link.href = filePath;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Download failed:", err);
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 1500);
+    }
   };
 
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={handleClick}
+        disabled={disabled}
+        aria-label={
+          disabled
+            ? "Resume download unavailable"
+            : "Download resume as PDF"
+        }
+        aria-describedby={showTooltip ? tooltipId : undefined}
         className={`icon ${
-          disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"
-        } ${showError ? "shake" : ""}`}
-        title={disabled ? "Resume unavailable" : "Download resume"}
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : ""
+        }`}
       >
-        {showError ? (
-          <AlertTriangle className="w-4 h-4 text-red-500" />
-        ) : (
-          <Download className="w-4 h-4" />
-        )}
+        <Download className="w-4 h-4" />
       </button>
 
-      {showError && <div className="download-tooltip">Unable to download</div>}
+      {showTooltip && (
+        <div
+          id={tooltipId}
+          role="status"
+          aria-live="polite"
+          className="download-tooltip"
+        >
+          Download unavailable
+        </div>
+      )}
     </div>
   );
 };
