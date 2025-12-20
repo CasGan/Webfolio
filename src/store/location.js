@@ -11,11 +11,11 @@ const useLocationStore = create(
       set((state) => {
         state.activeLocation = location;
       }),
-      resetActiveLocation: () => 
-        set((state) => {
-            state.activeLocation = DEFAULT_LOCATION;
-        }),
-  })),
+    resetActiveLocation: () =>
+      set((state) => {
+        state.activeLocation = DEFAULT_LOCATION;
+      }),
+  }))
 );
 
-export default useLocationStore; 
+export default useLocationStore;
