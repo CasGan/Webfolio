@@ -15,7 +15,7 @@ const useLocationStore = create(
       set((state) => {
         state.activeLocation = DEFAULT_LOCATION;
       }),
-  }))
+  })),
 );
 
 export default useLocationStore;
