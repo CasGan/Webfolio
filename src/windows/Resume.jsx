@@ -54,7 +54,7 @@ const Resume = () => {
         {loadError && (
           <div className="pdf-state pdf-error">
             <AlertCircle />
-            <p>{error}</p>
+            <p>{loadError}</p>
           </div>
         )}
 
