@@ -16,17 +16,17 @@ const PDF_PATH = "/files/resume.pdf";
 
 const Resume = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loadError, setLoadError] = useState(null);
 
   const handleLoadSuccess = () => {
     setIsLoading(false);
-    setError(null);
+    setLoadError(null);
   };
 
   const handleLoadError = (err) => {
     console.error("Failed to load PDF:", err);
     setIsLoading(false);
-    setError("Failed to load resume. Please try downloading it instead.");
+    setLoadError("Failed to load resume. Please try downloading it instead.");
   };
 
   return (
@@ -36,14 +36,14 @@ const Resume = () => {
         <h2>Resume.pdf</h2>
 
         <ResumeDownload
-          disabled={Boolean(error)}
+          disabled={false}
           filePath={PDF_PATH}
           fileName="resume.pdf"
         />
       </div>
       <div className="resume-content">
         {/* Loading State */}
-        {isLoading && !error && (
+        {isLoading && !loadError && (
           <div className="pdf-state pdf-loading">
             <Loader className="animate-spin" />
             <p>Loading resume…</p>
@@ -51,7 +51,7 @@ const Resume = () => {
         )}
 
         {/* Error State */}
-        {error && (
+        {loadError && (
           <div className="pdf-state pdf-error">
             <AlertCircle />
             <p>{error}</p>
@@ -59,7 +59,7 @@ const Resume = () => {
         )}
 
         {/* PDF Viewer */}
-        {!error && (
+        {!loadError && (
           <Document
             file={PDF_PATH}
             onLoadSuccess={handleLoadSuccess}
@@ -67,7 +67,9 @@ const Resume = () => {
             loading={null} // disables default react-pdf loader
             error={null} // disables default react-pdf error UI
           >
-            <Page pageNumber={1} renderTextLayer renderAnnotationLayer />
+            {!isLoading && (
+              <Page pageNumber={1} renderTextLayer renderAnnotationLayer />
+            )}
           </Document>
         )}
       </div>
