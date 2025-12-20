@@ -67,9 +67,7 @@ const Resume = () => {
             loading={null} // disables default react-pdf loader
             error={null} // disables default react-pdf error UI
           >
-            {!isLoading && (
-              <Page pageNumber={1} renderTextLayer renderAnnotationLayer />
-            )}
+            <Page pageNumber={1} renderTextLayer renderAnnotationLayer />
           </Document>
         )}
       </div>

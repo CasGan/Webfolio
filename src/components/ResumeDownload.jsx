@@ -43,7 +43,7 @@ const ResumeDownload = ({
       <button
         type="button"
         onClick={handleClick}
-        disabled={disabled}
+        disabled={false}
         aria-label={
           disabled
             ? "Resume download unavailable"
