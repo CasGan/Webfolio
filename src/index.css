@@ -66,6 +66,45 @@ body {
     @apply p-1 hover:bg-gray-200 rounded hover:cursor-default;
   }
 
+  .pdf-state {
+    @apply flex flex-col items-center justify-center gap-3 p-8 min-h-[60vh] text-sm text-gray-400 select-none;
+  }
+
+  .pdf-loading {
+    @apply text-gray-500;
+  }
+
+  .pdf-error {
+    @apply text-red-500;
+  }
+
+  .shake {
+    animation: shake 0.35s ease-in-out;
+  }
+  @keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-3px);
+    }
+    50% {
+      transform: translateX(3px);
+    }
+    75% {
+      transform: translateX(-2px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .download-tooltip {
+    @apply absolute top-full mt-2 right-0
+         bg-red-500 text-white text-xs px-3 py-1 rounded-md
+         shadow-lg whitespace-nowrap;
+  }
+
   #welcome {
     @apply text-gray-200 flex flex-col justify-center items-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none max-sm:h-screen max-sm:w-full max-sm:px-10;
 
@@ -295,14 +334,20 @@ body {
       }
     }
   }
-
   #resume {
-    @apply w-fit h-fit absolute top-16 left-7/12 bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;
+    @apply w-fit min-w-[700px] h-fit min-h-[900px] absolute top-16 left-7/12 
+         bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;
 
+    /* Window header */
     #window-header {
       h2 {
         @apply font-bold text-sm text-center flex-1;
       }
+    }
+
+    /* Content wrapper to center loading/error states */
+    .resume-content {
+      @apply flex items-center justify-center p-4 w-full h-full;
     }
   }
 
