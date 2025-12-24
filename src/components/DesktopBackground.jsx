@@ -10,6 +10,7 @@ export default function DesktopBackground() {
   const canvasRef = useRef(null);
   const mouse = useRef({ x: -1000, y: -1000 });
   const animationRef = useRef(null);
+  const prevSize = useRef({ w: window.innerWidth, h: window.innerHeight });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,40 +31,11 @@ export default function DesktopBackground() {
 
     let lastTime = performance.now();
 
-    function resize() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      canvas.width = bgCanvas.width = noiseCanvas.width = lineCanvas.width = packetCanvas.width = w;
-      canvas.height = bgCanvas.height = noiseCanvas.height = lineCanvas.height = packetCanvas.height = h;
-
-      // Background gradient
-      const bgGradient = bgCtx.createRadialGradient(w / 2, h / 2, w / 4, w / 2, h / 2, w);
-      bgGradient.addColorStop(0, "#0a0f13");
-      bgGradient.addColorStop(1, "#010103");
-      bgCtx.fillStyle = bgGradient;
-      bgCtx.fillRect(0, 0, w, h);
-
-      // Noise
-      const noiseData = noiseCtx.createImageData(w, h);
-      for (let i = 0; i < noiseData.data.length; i += 4) {
-        const n = Math.random() * 8;
-        noiseData.data[i] = n;
-        noiseData.data[i + 1] = n;
-        noiseData.data[i + 2] = n;
-        noiseData.data[i + 3] = 12; // subtle
-      }
-      noiseCtx.putImageData(noiseData, 0, 0);
-    }
-
-    window.addEventListener("resize", resize);
-    resize();
-
     // Nodes
     const nodes = [
       ...Array.from({ length: MAIN_NODE_COUNT }).map(() => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * prevSize.current.w,
+        y: Math.random() * prevSize.current.h,
         vx: (Math.random() - 0.5) * 0.2,
         vy: (Math.random() - 0.5) * 0.2,
         color: "#0ff",
@@ -72,8 +44,8 @@ export default function DesktopBackground() {
         isStatic: false,
       })),
       ...Array.from({ length: SECONDARY_NODE_COUNT }).map(() => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * prevSize.current.w,
+        y: Math.random() * prevSize.current.h,
         vx: (Math.random() - 0.5) * 0.15,
         vy: (Math.random() - 0.5) * 0.15,
         color: "#0f0",
@@ -105,15 +77,55 @@ export default function DesktopBackground() {
     let lastPacketTime = 0;
 
     // Mouse tracking
-    window.addEventListener("mousemove", (e) => {
+    const handleMouseMove = (e) => {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
-    });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
 
     const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
+    function resize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      // Scale nodes proportionally
+      const scaleX = w / prevSize.current.w;
+      const scaleY = h / prevSize.current.h;
+      nodes.forEach(node => {
+        node.x *= scaleX;
+        node.y *= scaleY;
+      });
+      prevSize.current = { w, h };
+
+      // Resize canvases
+      canvas.width = bgCanvas.width = noiseCanvas.width = lineCanvas.width = packetCanvas.width = w;
+      canvas.height = bgCanvas.height = noiseCanvas.height = lineCanvas.height = packetCanvas.height = h;
+
+      // Background gradient
+      const bgGradient = bgCtx.createRadialGradient(w / 2, h / 2, w / 4, w / 2, h / 2, w);
+      bgGradient.addColorStop(0, "#0a0f13");
+      bgGradient.addColorStop(1, "#010103");
+      bgCtx.fillStyle = bgGradient;
+      bgCtx.fillRect(0, 0, w, h);
+
+      // Noise
+      const noiseData = noiseCtx.createImageData(w, h);
+      for (let i = 0; i < noiseData.data.length; i += 4) {
+        const n = Math.random() * 8;
+        noiseData.data[i] = n;
+        noiseData.data[i + 1] = n;
+        noiseData.data[i + 2] = n;
+        noiseData.data[i + 3] = 12;
+      }
+      noiseCtx.putImageData(noiseData, 0, 0);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
     const animate = (timestamp) => {
-      const deltaTime = (timestamp - lastTime) / 16; // approximate frame-normalized
+      const deltaTime = (timestamp - lastTime) / 16;
       lastTime = timestamp;
 
       if (document.visibilityState === "hidden") {
@@ -135,32 +147,31 @@ export default function DesktopBackground() {
           const dyMouse = node.y - mouse.current.y;
           const distance = Math.hypot(dxMouse, dyMouse);
           if (distance < 100) {
-            node.x += (dxMouse / distance) * 0.3;
-            node.y += (dyMouse / distance) * 0.3;
+            node.x += (dxMouse / distance) * 0.3 * deltaTime;
+            node.y += (dyMouse / distance) * 0.3 * deltaTime;
           }
 
           node.x += node.vx * deltaTime;
           node.y += node.vy * deltaTime;
+
           if (node.x < 0 || node.x > w) node.vx *= -1;
           if (node.y < 0 || node.y > h) node.vy *= -1;
         }
 
-        // Draw pre-rendered glow
         const glow = glowCache[node.color + (node.isMain ? 18 : 10)];
         lineCtx.drawImage(glow, node.x - glow.width / 2, node.y - glow.height / 2);
 
-        // Node dot
         lineCtx.fillStyle = node.color;
         lineCtx.beginPath();
         lineCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
         lineCtx.fill();
       });
 
-      // Draw lines & spawn packets
+      // Draw lines and spawn packets
       nodes.forEach((node) => {
         const neighbors = nodes
-          .filter((n) => n !== node)
-          .map((n) => ({ node: n, d: dist(node, n) }))
+          .filter(n => n !== node)
+          .map(n => ({ node: n, d: dist(node, n) }))
           .sort((a, b) => a.d - b.d)
           .slice(0, NEIGHBORS);
 
@@ -168,10 +179,7 @@ export default function DesktopBackground() {
           if (d > 250) return;
 
           const alpha = 0.05 + 0.15 * (1 - d / 250);
-          const md = Math.min(
-            dist({ x: mouse.current.x, y: mouse.current.y }, node),
-            dist({ x: mouse.current.x, y: mouse.current.y }, neighbor)
-          );
+          const md = Math.min(dist({ x: mouse.current.x, y: mouse.current.y }, node), dist({ x: mouse.current.x, y: mouse.current.y }, neighbor));
           const mouseAlpha = md < 100 ? 0.06 : 0;
           const smoothAlpha = Math.min(alpha + mouseAlpha * 0.5, 0.15);
 
@@ -183,9 +191,8 @@ export default function DesktopBackground() {
           lineCtx.lineTo(neighbor.x, neighbor.y);
           lineCtx.stroke();
 
-          // Spawn packets along the line
           if (node.isMain && timestamp - lastPacketTime > 200 && Math.random() < 0.3) {
-            const t = 0.1 + Math.random() * 0.2; // centered more on line
+            const t = 0.1 + Math.random() * 0.2;
             packets.push({
               x: node.x + (neighbor.x - node.x) * t,
               y: node.y + (neighbor.y - node.y) * t,
@@ -240,6 +247,7 @@ export default function DesktopBackground() {
 
     return () => {
       window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
   }, []);

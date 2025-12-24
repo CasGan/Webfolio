@@ -44,7 +44,7 @@ const Gallery = () => {
                     icon: "/images/image.png",
                     kind: "file",
                     fileType: "img",
-                    imagUrl: img,
+                    imageUrl: img,
                   })
                 }
               >
