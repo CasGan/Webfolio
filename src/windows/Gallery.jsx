@@ -37,6 +37,8 @@ const Gallery = () => {
             {gallery.map(({ id, img }) => (
               <li
                 key={id}
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   openWindow("imgfile", {
                     id,
@@ -47,6 +49,19 @@ const Gallery = () => {
                     imageUrl: img,
                   })
                 }
+                onKeyDown={(e) => {
+                  if(e.key === "Enter" || e.key === " "){
+                    e.preventDefault();
+                    openWindow("imgfile" ,{
+                      id,
+                      name: "Gallery image",
+                      Icon: "/images/image.png",
+                      kind: "file",
+                      fileType: "img",
+                      imageUrl: img,
+                    });
+                  }
+                }}
               >
                 <img src={img} alt={`Gallery image ${id}`} />
               </li>
