@@ -7,11 +7,24 @@ body {
   width: 100dvw;
   overflow: hidden;
   height: 100dvh;
-  background-image: url("/images/wallpaper.png");
+  /* background-image: url("/images/wallpaper.png");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center; */
+  background-color: #020617;
 }
+
+
+
+.os-root {
+  position: relative;
+  z-index: 10;
+  width: 100dvw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+
 
 @theme {
   --font-georama: "Georama", sans-serif;
@@ -31,9 +44,12 @@ body {
   @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
 }
 
+
 @layer base {
   main {
-    @apply w-dvw h-dvh overflow-hidden;
+    @apply  w-dvw h-dvh overflow-hidden;
+    position: relative; 
+    z-index: 10; 
   }
 
   nav {
@@ -59,6 +75,14 @@ body {
       @apply text-sm font-medium text-black;
     }
   }
+}
+#terminal,
+#browser,
+#finder,
+#resume,
+#photos,
+#contacts {
+  z-index: 20;
 }
 
 @layer components {
@@ -107,6 +131,7 @@ body {
 
   #welcome {
     @apply text-gray-200 flex flex-col justify-center items-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none max-sm:h-screen max-sm:w-full max-sm:px-10;
+    z-index: 10;
 
     .small-screen {
       @apply sm:hidden m-7 bg-red-300/20 backdrop-blur-lg p-3 rounded-md absolute top-10;
@@ -203,6 +228,7 @@ body {
 
   #terminal {
     @apply w-xl absolute top-32 left-1/12 bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;
+    
 
     h2 {
       @apply font-bold text-sm text-center w-full;
@@ -353,6 +379,7 @@ body {
 
   #finder {
     @apply absolute w-3xl left-40 top-20 shadow-2xl drop-shadow-2xl overflow-hidden rounded-xl;
+    z-index: 10; 
 
     .sidebar {
       @apply w-48 bg-gray-50 border-r border-gray-200 flex flex-col p-5 space-y-3;
@@ -422,7 +449,9 @@ body {
   }
 
   #home {
-    @apply relative z-0 max-sm:hidden;
+    @apply relative max-sm:hidden;
+    z-index: 10; 
+    position: absolute; 
 
     ul {
       li {
