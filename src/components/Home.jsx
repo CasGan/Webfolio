@@ -17,8 +17,16 @@ const Home = () => {
   };
 
   useGSAP(() => {
+    const navHeight = 60; 
     const draggables = Draggable.create(".folder", {
       type: "x,y",
+      bounds: {
+        top: navHeight,
+        left: 0,
+        width: window.innerWidth,
+        height: window.innerHeight - navHeight,
+      },
+      edgeResistance: 0.65, 
       dragClickThreshold: 5,
       onClick: function () {
         const projectId = this.target.dataset.projectId;
