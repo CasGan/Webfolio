@@ -1,7 +1,9 @@
-import Navbar from "#components/Navbar.jsx";
-import Welcome from "#components/Welcome.jsx";
-import Dock from "#components/Dock.jsx";
-import WindowControls from "#components/WindowControls.jsx";
-import ResumeDownload from "#components/ResumeDownload.jsx";
+import Navbar from "./Navbar.jsx";
+import Welcome from "./Welcome.jsx";
+import Dock from "./Dock.jsx";
+import WindowControls from "./WindowControls.jsx";
+import ResumeDownload from "./ResumeDownload.jsx";
+import Home from "./Home.jsx";
+import DesktopBackground from "./DesktopBackground.jsx";
 
-export { Navbar, Welcome, Dock, WindowControls, ResumeDownload}; 
+export { Navbar, Welcome, Dock, WindowControls, ResumeDownload, Home, DesktopBackground}; 
