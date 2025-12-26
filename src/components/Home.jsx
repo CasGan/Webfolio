@@ -5,11 +5,11 @@ import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
 import { Draggable } from "gsap/Draggable";
 
-const projects = locations.work?.children ?? [];
-
 const Home = () => {
   const { openWindow } = useWindowStore();
   const { setActiveLocation } = useLocationStore();
+
+  const projects = locations.work?.children ?? [];
 
   const handleOpenProjectFinder = (project) => {
     setActiveLocation(project);
@@ -17,25 +17,29 @@ const Home = () => {
   };
 
   useGSAP(() => {
-    const navHeight = 60; 
+    const navHeight = 25;
     const draggables = Draggable.create(".folder", {
-      type: "x,y",
+      type: "left,top",
       bounds: {
         top: navHeight,
         left: 0,
         width: window.innerWidth,
         height: window.innerHeight - navHeight,
       },
-      edgeResistance: 0.65, 
+      edgeResistance: 0.65,
       dragClickThreshold: 5,
       onClick: function () {
-        const projectId = this.target.dataset.projectId;
-        const project = projects.find((p) => p.id === projectId);
+        // Ensure we get the <li> even if user clicks img or p inside
+        const li = this.target.closest("li");
+        if (!li) return;
+
+        const projectId = li.dataset.projectId;
+        const project = projects.find((p) => p.id == projectId); // allow number/string match
         if (project) handleOpenProjectFinder(project);
       },
     });
 
-    // clean up
+    // cleanup when component unmounts
     return () => {
       draggables.forEach((draggable) => draggable.kill());
     };
@@ -43,7 +47,7 @@ const Home = () => {
 
   return (
     <section id="home">
-      <ul>
+      <ul className="project-list">
         {projects.map((project) => (
           <li
             key={project.id}

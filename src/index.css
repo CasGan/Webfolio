@@ -454,7 +454,7 @@ body {
   #home {
     @apply relative max-sm:hidden;
     z-index: 10; 
-    position: absolute; 
+    /* position: absolute;  */
 
     ul {
       li {
@@ -465,9 +465,10 @@ body {
         }
 
         p {
-          @apply text-sm text-white text-center px-1 rounded-md group-hover:bg-blue-500 transition-colors max-w-40;
+          @apply text-sm text-white text-center px-1 rounded-md group-hover:bg-cyan-800 transition-colors max-w-40;
         }
       }
     }
   }
+  
 }
