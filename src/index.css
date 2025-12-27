@@ -186,7 +186,7 @@ body {
   }
 
   #dock {
-    @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-50 select-none max-sm:hidden;
+  @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-[100] select-none max-sm:hidden;
 
     .dock-container {
       @apply bg-white/20 backdrop-blur-md justify-between rounded-2xl p-1.5 flex items-end gap-1.5;
@@ -198,6 +198,7 @@ body {
 
     .dock-icon {
       @apply size-14 3xl:size-20 cursor-pointer;
+      pointer-events: auto;
 
       img {
         @apply object-cover object-center;
