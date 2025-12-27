@@ -85,6 +85,8 @@ body {
 
   nav {
     @apply flex justify-between items-center bg-white/50 backdrop-blur-3xl p-2 px-5 select-none;
+    position: relative;
+    z-index: 50;
 
     div {
       @apply flex items-center max-sm:w-full max-sm:justify-center gap-5;
@@ -496,6 +498,7 @@ body {
 
     .folder-container {
       position: absolute;
+      pointer-events: none;
       inset: 0;
       z-index: 0; /* folders behind windows */
     }
@@ -505,6 +508,7 @@ body {
       display: flex;
       flex-direction: column;
       align-items: center;
+      pointer-events: auto;
 
       img {
         @apply group-hover:bg-gray-950/10 p-1 rounded-md;
