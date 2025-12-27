@@ -20,51 +20,84 @@ const Home = () => {
   const projectsRef = useRef(projects);
   const handleOpenRef = useRef(handleOpenProjectFinder);
 
+  const draggablesRef = useRef([]);
+  const positionsRef = useRef({});
+
   useEffect(() => {
     projectsRef.current = projects;
     handleOpenRef.current = handleOpenProjectFinder;
   });
 
- useGSAP(() => {
-  const navbar = document.querySelector("nav");
-  const navHeight = navbar ? navbar.offsetHeight : 25;
+  useGSAP(() => {
+    const navbar = document.querySelector("nav");
+    const navHeight = navbar ? navbar.offsetHeight : 25;
 
-  const updateBounds = () => ({
-    top: navHeight,
-    left: 0,
-    width: window.innerWidth,
-    height: window.innerHeight - navHeight,
-  });
+    const updateBounds = () => ({
+      top: navHeight,
+      left: 0,
+      width: window.innerWidth,
+      height: window.innerHeight - navHeight,
+    });
+
+    // Only store positions once, after mount
+    const folderEls = document.querySelectorAll(".folder");
+    folderEls.forEach((el) => {
+      positionsRef.current[el.dataset.projectId] = {
+        x: el.offsetLeft,
+        y: el.offsetTop,
+      };
+    });
 
     const draggables = Draggable.create(".folder", {
       type: "x, y",
       bounds: updateBounds(),
       edgeResistance: 0.65,
       dragClickThreshold: 5,
-      
       onClick: function () {
-        // Ensure we get the <li> even if user clicks img or p inside
         const li = this.target.closest("li");
         if (!li) return;
-
         const projectId = li.dataset.projectId;
-        const project = projectsRef.current.find((p) => p.id == projectId); // allow number/string match
+        const project = projectsRef.current.find((p) => p.id == projectId);
         if (project) handleOpenRef.current(project);
       },
     });
 
+    draggablesRef.current = draggables;
+
     const handleResize = () => {
-      draggables.forEach((d) => {
-        draggables.forEach((d) => d.applyBounds(updateBounds()));
+      const bounds = updateBounds();
+
+      draggablesRef.current.forEach((d) => {
+        const li = d.target;
+
+        if (window.innerWidth < 640) {
+          // Small screen: hide folders (Tailwind does this) and disable dragging
+          d.disable();
+        } else {
+          // Large screen: restore positions and enable dragging
+          d.enable();
+          d.applyBounds(bounds);
+
+          const pos = positionsRef.current[li.dataset.projectId];
+          if (pos) {
+            d.x = pos.x;
+            d.y = pos.y;
+            d.update();
+          }
+        }
       });
     };
 
+    // Initial call
+    if (window.innerWidth >= 640) {
+      handleResize();
+    }
+
     window.addEventListener("resize", handleResize);
 
-    // cleanup when component unmounts
     return () => {
       window.removeEventListener("resize", handleResize);
-      draggables.forEach((draggable) => draggable.kill());
+      draggablesRef.current.forEach((d) => d.kill());
     };
   }, []);
 
