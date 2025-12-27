@@ -7,7 +7,7 @@ const FONT_WEIGHTS = {
   title: { min: 400, max: 900, default: 400 },
 };
 const getInputMode = () => {
-  if(typeof window === "undefines") return "unknown"; 
+  if(typeof window === "undefined") return "unknown"; 
   if (window.matchMedia("(hover: hover)").matches) return "hover";
   if (
     window.matchMedia("(hover: none)").matches ||
@@ -131,6 +131,7 @@ const setupTextTap = (container, type) => {
 
 /*  COMPONENT  */
 const Welcome = () => {
+  const containerRef = useRef(null);
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
 
@@ -163,7 +164,7 @@ useGSAP(() => {
           setupTextTap(subtitleRef.current, "subtitle")
         );
       }
-    }, titleRef);
+    }, containerRef);
   };
 
   init();
@@ -195,7 +196,7 @@ useGSAP(() => {
 }, []);
 
   return (
-    <section id="welcome">
+    <section id="welcome" ref={containerRef}>
       <p ref={subtitleRef}>
         {renderText(
           "Hey, I'm Cassandra! Welcome to my",
