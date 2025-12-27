@@ -7,6 +7,7 @@ const FONT_WEIGHTS = {
   title: { min: 400, max: 900, default: 400 },
 };
 const getInputMode = () => {
+  if(typeof window === "undefines") return "unknown"; 
   if (window.matchMedia("(hover: hover)").matches) return "hover";
   if (
     window.matchMedia("(hover: none)").matches ||
