@@ -33,7 +33,7 @@ body {
   cursor: grab;
   user-select: none;
   touch-action: none;
-  will-change: tranform, opacity;
+  will-change: transform, opacity;
 }
 
 /* Mobile overrides MUST come AFTER */
@@ -46,8 +46,8 @@ body {
   }
 
   .folder {
-    position: static !important;
-    transform: none !important;
+    position: static;
+    transform: none;
     cursor: pointer;
     touch-action: auto;
   }
@@ -501,12 +501,7 @@ body {
     }
 
     .folder-container li.folder {
-      position: absolute;
-      cursor: grab;
-      user-select: none;
-      touch-action: none;
       z-index: 0; /* ensures behind all windows */
-      will-change: transform; /* GSAP animation plays smoothly */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -527,13 +522,6 @@ body {
 
       .folder-container {
         display: none; /* hide folders on mobile */
-      }
-
-      .folder-container li.folder {
-        position: static !important;
-        transform: none !important;
-        cursor: pointer;
-        touch-action: auto;
       }
     }
 }
