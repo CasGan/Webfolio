@@ -5,7 +5,7 @@
 html,
 body {
   width: 100dvw;
-  overflow: hidden;
+  overflow-x: hidden;
   height: 100dvh;
   /* background-image: url("/images/wallpaper.png");
   background-size: cover;
@@ -13,8 +13,6 @@ body {
   background-position: center; */
   background-color: #020617;
 }
-
-
 
 .os-root {
   position: relative;
@@ -24,7 +22,10 @@ body {
   overflow: hidden;
 }
 
-
+.folder {
+  position: absolute;
+  cursor: grab;
+}
 
 @theme {
   --font-georama: "Georama", sans-serif;
@@ -44,12 +45,20 @@ body {
   @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
 }
 
+@layer utilities {
+  .fluid-subtitle {
+    font-size: clamp(1.25rem, 2.8vw, 2.25rem);
+  }
+  .fluid-title {
+    font-size: clamp(3rem, 8vw, 8rem);
+  }
+}
 
 @layer base {
   main {
-    @apply  w-dvw h-dvh overflow-hidden;
-    position: relative; 
-    z-index: 10; 
+    @apply w-dvw h-dvh overflow-hidden;
+    position: relative;
+    z-index: 10;
   }
 
   nav {
@@ -128,19 +137,29 @@ body {
          bg-red-500 text-white text-xs px-3 py-1 rounded-md
          shadow-lg whitespace-nowrap;
   }
+#welcome {
+  -webkit-tap-highlight-color: transparent;
 
-  #welcome {
-    @apply text-gray-200 flex flex-col justify-center items-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none max-sm:h-screen max-sm:w-full max-sm:px-10;
-    z-index: 10;
+  @apply text-gray-200 flex flex-col justify-center items-center
+    absolute top-1/2 left-1/2
+    -translate-x-1/2 -translate-y-1/2
+    select-none max-sm:h-screen max-sm:w-full max-sm:px-10;
+  z-index: 10;
 
-    .small-screen {
-      @apply sm:hidden m-7 bg-red-300/20 backdrop-blur-lg p-3 rounded-md absolute top-10;
+  span {
+    will-change: transform, font-weight, filter;
+    display: inline-block;
+    white-space: pre;
+  }
 
-      p {
-        @apply flex-1 text-[16px] text-center font-roboto text-gray-400;
-      }
+  .small-screen {
+    @apply sm:hidden m-7 bg-red-300/20 backdrop-blur-lg p-3 rounded-md absolute top-10;
+
+    p {
+      @apply flex-1 text-[16px] text-center font-roboto text-gray-400;
     }
   }
+}
 
   #dock {
     @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-50 select-none max-sm:hidden;
@@ -228,7 +247,6 @@ body {
 
   #terminal {
     @apply w-xl absolute top-32 left-1/12 bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;
-    
 
     h2 {
       @apply font-bold text-sm text-center w-full;
@@ -378,7 +396,7 @@ body {
   }
 
   #finder {
-    @apply absolute w-3xl left-40 top-20 shadow-2xl drop-shadow-2xl overflow-hidden rounded-xl; 
+    @apply absolute w-3xl left-40 top-20 shadow-2xl drop-shadow-2xl overflow-hidden rounded-xl;
 
     .sidebar {
       @apply w-48 bg-gray-50 border-r border-gray-200 flex flex-col p-5 space-y-3;
@@ -449,8 +467,8 @@ body {
 
   #home {
     @apply relative max-sm:hidden;
-    z-index: 10; 
-    position: absolute; 
+    z-index: 10;
+    position: absolute;
 
     ul {
       li {
@@ -461,7 +479,7 @@ body {
         }
 
         p {
-          @apply text-sm text-white text-center px-1 rounded-md group-hover:bg-blue-500 transition-colors max-w-40;
+          @apply text-sm text-white text-center px-1 rounded-md group-hover:bg-cyan-800 transition-colors max-w-40;
         }
       }
     }
