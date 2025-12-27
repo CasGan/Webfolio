@@ -64,6 +64,12 @@ const setupTextHover = (container, type) => {
 
   container.addEventListener("mousemove", handleMouseMove);
   container.addEventListener("mouseleave", resetLetters);
+
+   return () => {
+    container.removeEventListener("mousemove", handleMouseMove);
+    container.removeEventListener("mouseleave", resetLetters);
+    
+  };
 };
 
 /*  TAP (MOBILE – RIPPLE)  */
@@ -116,6 +122,10 @@ const setupTextTap = (container, type) => {
   };
 
   container.addEventListener("touchstart", handleTap, { passive: true });
+
+  return () => {
+    container.removeEventListener("touchstart", handleTap);
+  };
 };
 
 /*  COMPONENT  */
@@ -124,22 +134,33 @@ const Welcome = () => {
   const subtitleRef = useRef(null);
 
 useGSAP(() => {
-  // gsap context 
+  const hoverQuery = window.matchMedia("(hover: hover)");
+  const coarseQuery = window.matchMedia("(pointer: coarse)");
+
   let ctx;
   let currentMode = getInputMode();
+  let cleanups = [];
 
   const init = () => {
+    // Run all previous cleanups first
+    cleanups.forEach((fn) => fn?.());
+    cleanups = [];
+
+    // Revert previous GSAP context
     ctx?.revert();
 
+    // Create new GSAP context
     ctx = gsap.context(() => {
       if (currentMode === "hover") {
-        setupTextHover(titleRef.current, "title");
-        setupTextHover(subtitleRef.current, "subtitle");
-      }
-
-      if (currentMode === "touch") {
-        setupTextTap(titleRef.current, "title");
-        setupTextTap(subtitleRef.current, "subtitle");
+        cleanups.push(
+          setupTextHover(titleRef.current, "title"),
+          setupTextHover(subtitleRef.current, "subtitle")
+        );
+      } else if (currentMode === "touch") {
+        cleanups.push(
+          setupTextTap(titleRef.current, "title"),
+          setupTextTap(subtitleRef.current, "subtitle")
+        );
       }
     }, titleRef);
   };
@@ -154,16 +175,20 @@ useGSAP(() => {
     }
   };
 
-  const hoverQuery = window.matchMedia("(hover: hover)");
-  const coarseQuery = window.matchMedia("(pointer: coarse)");
-
+  // Listen to media query changes
   hoverQuery.addEventListener("change", handleChange);
   coarseQuery.addEventListener("change", handleChange);
 
- 
+  // Cleanup on unmount
   return () => {
     hoverQuery.removeEventListener("change", handleChange);
     coarseQuery.removeEventListener("change", handleChange);
+
+    // Cleanup hover/tap event listeners
+    cleanups.forEach((fn) => fn?.());
+    cleanups = [];
+
+    // Revert GSAP context
     ctx?.revert();
   };
 }, []);
