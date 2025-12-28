@@ -109,14 +109,14 @@ body {
     }
   }
 }
-#terminal,
+/* #terminal,
 #browser,
 #finder,
 #resume,
 #photos,
 #contacts {
   z-index: 20;
-}
+} */
 
 @layer components {
   .icon {
@@ -186,7 +186,7 @@ body {
   }
 
   #dock {
-  @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-[100] select-none max-sm:hidden;
+    @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-[100] select-none max-sm:hidden;
 
     .dock-container {
       @apply bg-white/20 backdrop-blur-md justify-between rounded-2xl p-1.5 flex items-end gap-1.5;
@@ -521,12 +521,12 @@ body {
     }
   }
   @media (max-width: 640px) {
-      #home {
-        display: none;
-      }
-
-      .folder-container {
-        display: none; /* hide folders on mobile */
-      }
+    #home {
+      display: none;
     }
+
+    .folder-container {
+      display: none; /* hide folders on mobile */
+    }
+  }
 }
