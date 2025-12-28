@@ -27,6 +27,22 @@ const Home = () => {
     setActiveLocation(project);
     openWindow("finder");
   };
+  const handleFolderClick = (project) => {
+  const { windows, openWindow, closeWindow } = useWindowStore.getState();
+  const windowKey = "finder"; // assuming all folders open the Finder window
+
+  const isOpen = windows[windowKey]?.isOpen;
+
+  if (isOpen && project.id === windows[windowKey]?.data?.id) {
+    // If the same project is already open, close it
+    closeWindow(windowKey);
+  } else {
+    // Otherwise, open the window with this project
+    setActiveLocation(project);
+    openWindow(windowKey, project);
+  }
+};
+
 
   useEffect(() => {
     projectsRef.current = projects;
@@ -192,6 +208,7 @@ const handleResize = () => {
             key={project.id}
             className="folder"
             data-project-id={project.id}
+            onClick={() => handleFolderClick(project)}
           >
             <img src="/images/folder.png" alt={project.name} />
             <p>{project.name}</p>
