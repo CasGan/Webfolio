@@ -5,10 +5,6 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
-const Dock = () => {
-  const dockRef = useRef(null);
-  const { openWindow, closeWindow, windows } = useWindowStore();
-
   const ANIMATION_CONFIG = {
     DISTANCE_EXPONENT: 2.75,
     FALLOFF_DIVISOR: 20000,
@@ -18,6 +14,10 @@ const Dock = () => {
     HOVER_DURATION: 0.2,
     RESET_DURATION: 0.3,
   };
+
+const Dock = () => {
+  const dockRef = useRef(null);
+  const { openWindow, closeWindow, windows } = useWindowStore();
 
   // GSAP dock hover/magnification
   useGSAP(() => {
@@ -60,7 +60,7 @@ const Dock = () => {
           scale: 1,
           y: 0,
           zIndex: 0,
-          duration: 0.3,
+          duration: ANIMATION_CONFIG.RESET_DURATION,
           ease: "power1.out",
         })
       );
