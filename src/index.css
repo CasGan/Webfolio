@@ -21,10 +21,36 @@ body {
   height: 100dvh;
   overflow: hidden;
 }
+.project-list {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 
+/* Desktop */
 .folder {
   position: absolute;
   cursor: grab;
+  user-select: none;
+  touch-action: none;
+  will-change: transform, opacity;
+}
+
+/* Mobile overrides MUST come AFTER */
+@media (max-width: 640px) {
+  .project-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .folder {
+    position: static;
+    transform: none;
+    cursor: pointer;
+    touch-action: auto;
+  }
 }
 
 @theme {
@@ -39,10 +65,6 @@ body {
 
 @utility col-center {
   @apply flex flex-col items-center justify-center;
-}
-
-@utility abs-center {
-  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
 }
 
 @layer utilities {
@@ -63,6 +85,8 @@ body {
 
   nav {
     @apply flex justify-between items-center bg-white/50 backdrop-blur-3xl p-2 px-5 select-none;
+    position: relative;
+    z-index: 50;
 
     div {
       @apply flex items-center max-sm:w-full max-sm:justify-center gap-5;
@@ -137,32 +161,32 @@ body {
          bg-red-500 text-white text-xs px-3 py-1 rounded-md
          shadow-lg whitespace-nowrap;
   }
-#welcome {
-  -webkit-tap-highlight-color: transparent;
+  #welcome {
+    -webkit-tap-highlight-color: transparent;
 
-  @apply text-gray-200 flex flex-col justify-center items-center
+    @apply text-gray-200 flex flex-col justify-center items-center
     absolute top-1/2 left-1/2
     -translate-x-1/2 -translate-y-1/2
     select-none max-sm:h-screen max-sm:w-full max-sm:px-10;
-  z-index: 10;
+    z-index: 10;
 
-  span {
-    will-change: transform, font-weight, filter;
-    display: inline-block;
-    white-space: pre;
-  }
+    span {
+      will-change: transform, font-weight, filter;
+      display: inline-block;
+      white-space: pre;
+    }
 
-  .small-screen {
-    @apply sm:hidden m-7 bg-red-300/20 backdrop-blur-lg p-3 rounded-md absolute top-10;
+    .small-screen {
+      @apply sm:hidden m-7 bg-red-300/20 backdrop-blur-lg p-3 rounded-md absolute top-10;
 
-    p {
-      @apply flex-1 text-[16px] text-center font-roboto text-gray-400;
+      p {
+        @apply flex-1 text-[16px] text-center font-roboto text-gray-400;
+      }
     }
   }
-}
 
   #dock {
-    @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-50 select-none max-sm:hidden;
+  @apply absolute bottom-5 left-1/2 -translate-x-1/2 z-[100] select-none max-sm:hidden;
 
     .dock-container {
       @apply bg-white/20 backdrop-blur-md justify-between rounded-2xl p-1.5 flex items-end gap-1.5;
@@ -174,6 +198,7 @@ body {
 
     .dock-icon {
       @apply size-14 3xl:size-20 cursor-pointer;
+      pointer-events: auto;
 
       img {
         @apply object-cover object-center;
@@ -464,24 +489,44 @@ body {
       }
     }
   }
-
   #home {
-    @apply relative max-sm:hidden;
-    z-index: 10;
     position: absolute;
+    width: 100dvw;
+    height: 100dvh;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0; /* ensures everything inside #home stays behind windows */
 
-    ul {
-      li {
-        @apply absolute z-0 select-none flex items-center flex-col;
+    .folder-container {
+      position: absolute;
+      pointer-events: none;
+      inset: 0;
+      z-index: 0; /* folders behind windows */
+    }
 
-        img {
-          @apply group-hover:bg-gray-950/10 p-1 rounded-md;
-        }
+    .folder-container li.folder {
+      z-index: 0; /* ensures behind all windows */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: auto;
 
-        p {
-          @apply text-sm text-white text-center px-1 rounded-md group-hover:bg-cyan-800 transition-colors max-w-40;
-        }
+      img {
+        @apply group-hover:bg-gray-950/10 p-1 rounded-md;
+      }
+
+      p {
+        @apply text-sm text-white text-center px-1 rounded-md group-hover:bg-cyan-800 transition-colors max-w-40;
       }
     }
   }
+  @media (max-width: 640px) {
+      #home {
+        display: none;
+      }
+
+      .folder-container {
+        display: none; /* hide folders on mobile */
+      }
+    }
 }
