@@ -3,7 +3,7 @@ import { navIcons, navLinks } from "#constants";
 import useWindowStore from "#store/window.js";
 
 const Navbar = () => {
-  const { openWindow, closeWindow, windows } = useWindowStore(); 
+  const { openWindow, closeWindow, windows } = useWindowStore();
 
   const toggleWindow = (type) => {
     const windowState = windows[type];
@@ -18,7 +18,7 @@ const Navbar = () => {
   return (
     <nav>
       <div>
-        <img src="/images/snake.png" alt="logo" className="icon"/>
+        <img src="/images/snake.png" alt="logo" className="icon" />
         <p className="font-bold ">Cassandra's Portfolio</p>
         <ul>
           {navLinks.map(({ id, name, type }) => (
@@ -37,7 +37,7 @@ const Navbar = () => {
             </li>
           ))}
         </ul>
-        <time>{dayjs().format('ddd MMM D h:mm A')}</time>
+        <time>{dayjs().format("ddd MMM D h:mm A")}</time>
       </div>
     </nav>
   );

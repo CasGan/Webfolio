@@ -1,6 +1,6 @@
 import { dockApps } from "#constants";
 import useWindowStore from "#store/window";
-import { Tooltip } from "react-tooltip"; 
+import { Tooltip } from "react-tooltip";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -18,6 +18,7 @@ const Dock = () => {
     const dockRect = dock.getBoundingClientRect();
 
     const animateIcons = (mouseX) => {
+      const dockRect = dock.getBoundingClientRect();
       icons.forEach((icon) => {
         const { left: iconLeft, width } = icon.getBoundingClientRect();
         const center = iconLeft - dockRect.left + width / 2;
@@ -37,8 +38,8 @@ const Dock = () => {
     };
 
     const handleMouseMove = (e) => {
-      const { left } = dock.getBoundingClientRect();
-      animateIcons(e.clientX - left);
+      const dockRect = dock.getBoundingClientRect();
+      animateIcons(e.clientX - dockRect.left);
     };
 
     const resetIcons = () =>
@@ -73,12 +74,17 @@ const Dock = () => {
 
   return (
     <section id="dock">
-      <div ref={dockRef} className="dock-container flex justify-center items-end p-1.5 bg-white/20 backdrop-blur-md rounded-2xl gap-1.5 select-none">
+      <div
+        ref={dockRef}
+        className="dock-container flex justify-center items-end p-1.5 bg-white/20 backdrop-blur-md rounded-2xl gap-1.5 select-none"
+      >
         {dockApps.map(({ id, name, icon, canOpen }) => (
           <button
             key={id}
             type="button"
-            className={`dock-icon relative size-14 3xl:size-20 ${canOpen ? "" : "opacity-60"}`}
+            className={`dock-icon relative size-14 3xl:size-20 ${
+              canOpen ? "" : "opacity-60"
+            }`}
             aria-label={name}
             data-tooltip-id="dock-tooltip"
             data-tooltip-content={name}
