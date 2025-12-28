@@ -9,6 +9,16 @@ const Dock = () => {
   const dockRef = useRef(null);
   const { openWindow, closeWindow, windows } = useWindowStore();
 
+  const ANIMATION_CONFIG = {
+    DISTANCE_EXPONENT: 2.75,
+    FALLOFF_DIVISOR: 20000,
+    SCALE_MULTIPLIER: 0.25,
+    Y_OFFSET: -15,
+    MAX_Z_INDEX: 1000,
+    HOVER_DURATION: 0.2,
+    RESET_DURATION: 0.3,
+  };
+
   // GSAP dock hover/magnification
   useGSAP(() => {
     const dock = dockRef.current;
@@ -24,13 +34,16 @@ const Dock = () => {
         const distance = Math.abs(mouseX - center);
 
         // exponential falloff
-        const intensity = Math.exp(-(distance ** 2.75) / 20000);
+        const intensity = Math.exp(
+          -(distance ** ANIMATION_CONFIG.DISTANCE_EXPONENT) /
+            ANIMATION_CONFIG.FALLOFF_DIVISOR
+        );
 
         gsap.to(icon, {
-          scale: 1 + 0.25 * intensity,
-          y: -15 * intensity,
-          zIndex: Math.round(1000 * intensity),
-          duration: 0.2,
+          scale: 1 + ANIMATION_CONFIG.SCALE_MULTIPLIER * intensity,
+          y: ANIMATION_CONFIG.Y_OFFSET * intensity,
+          zIndex: Math.round(ANIMATION_CONFIG.MAX_Z_INDEX * intensity),
+          duration: ANIMATION_CONFIG.HOVER_DURATION,
           ease: "power1.out",
         });
       });
@@ -62,13 +75,11 @@ const Dock = () => {
   }, []);
 
   // Toggle app windows
-  const toggleApp = (app) => {
-    if (!app.canOpen) return;
-
-    const appWindow = windows[app.id];
+  const toggleApp = (appId) => {
+    const appWindow = windows[appId];
     if (!appWindow) return;
 
-    appWindow.isOpen ? closeWindow(app.id) : openWindow(app.id);
+    appWindow.isOpen ? closeWindow(appId) : openWindow(appId);
   };
 
   return (
@@ -89,7 +100,7 @@ const Dock = () => {
             data-tooltip-content={name}
             data-tooltip-delay-show={150}
             disabled={!canOpen}
-            onClick={() => toggleApp({ id, canOpen })}
+            onClick={() => toggleApp(id)}
           >
             <img
               src={`/images/${icon}`}
