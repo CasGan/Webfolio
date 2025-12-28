@@ -26,9 +26,9 @@ const Dock = () => {
 
     const icons = dock.querySelectorAll(".dock-icon");
 
-    const animateIcons = (mouseX) => {
-      const dockRect = dock.getBoundingClientRect();
-      icons.forEach((icon) => {
+    const animateIcons = (mouseX, dockRect) => {
+
+        icons.forEach((icon) => {
         const { left: iconLeft, width } = icon.getBoundingClientRect();
         const center = iconLeft - dockRect.left + width / 2;
         const distance = Math.abs(mouseX - center);
@@ -51,7 +51,7 @@ const Dock = () => {
 
     const handleMouseMove = (e) => {
       const dockRect = dock.getBoundingClientRect();
-      animateIcons(e.clientX - dockRect.left);
+      animateIcons(e.clientX - dockRect.left, dockRect);
     };
 
     const resetIcons = () =>
