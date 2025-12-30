@@ -14,9 +14,6 @@ const WindowWrapper = (Component, windowKey) => {
     const zIndex = windowState?.zIndex ?? 0; 
     const data = windowState?.data ?? null; 
 
-    // if (!windowState) return null;
-    // const { isOpen, zIndex, data } = windowState;
-
     useGSAP(() => {
       const element = ref.current;
       if (!element || !isOpen) return;

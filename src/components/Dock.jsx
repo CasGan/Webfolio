@@ -100,9 +100,6 @@ const Dock = () => {
               "data-tooltip-content": name,
             })}
             onPointerDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
               if (e.pointerType === "touch") {
                 gsap.to(e.currentTarget, {
                   scale: ANIMATION.TAP_SCALE,
@@ -111,9 +108,6 @@ const Dock = () => {
               }
             }}
             onPointerUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
               if (e.pointerType === "touch") {
                 gsap.to(e.currentTarget, {
                   scale: 1,
@@ -130,7 +124,7 @@ const Dock = () => {
               draggable={false}
             />
 
-            {/* ✅ Mobile-visible label */}
+            {/* Mobile-visible label */}
             {isTouch && (
               <span className="sr-only">{name}</span>
             )}
