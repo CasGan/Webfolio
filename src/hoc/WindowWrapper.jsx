@@ -65,6 +65,7 @@ const WindowWrapper = (Component, windowKey) => {
             focusWindow(windowKey);
           }
         }}
+        onPointerDown={() => focusWindow(windowKey)}
       >
         <Component {...props} data={data} />
       </section>
