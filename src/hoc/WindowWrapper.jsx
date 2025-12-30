@@ -10,8 +10,12 @@ const WindowWrapper = (Component, windowKey) => {
 
     // Subscribe to the specific window's state
     const windowState = windows[windowKey];
-    if (!windowState) return null;
-    const { isOpen, zIndex, data } = windowState;
+    const isOpen = windowState?.isOpen ?? false; 
+    const zIndex = windowState?.zIndex ?? 0; 
+    const data = windowState?.data ?? null; 
+
+    // if (!windowState) return null;
+    // const { isOpen, zIndex, data } = windowState;
 
     useGSAP(() => {
       const element = ref.current;
@@ -51,6 +55,9 @@ const WindowWrapper = (Component, windowKey) => {
       element.style.display = isOpen ? "block" : "none";
       element.style.zIndex = zIndex; 
     }, [isOpen, zIndex]);
+// early return AFTER all hooks 
+
+    if(!windowState) return null; 
 
     return (
       <section

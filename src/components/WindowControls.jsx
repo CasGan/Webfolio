@@ -15,10 +15,10 @@ const WindowControls = ({target}) => {
         className="close"
         role="button"
         aria-label="Close window"
+        tabIndex={0}
         onPointerUp={handleClose}
         onClick={(e) => {
-          // mouse / keyboard fallback only
-          if (e.detail !== 0) handleClose(e);
+          if (e.detail === 0) handleClose(e);
         }}
       />
         <div className="minimize" />

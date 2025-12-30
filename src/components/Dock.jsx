@@ -94,7 +94,7 @@ const Dock = () => {
             className="dock-icon data-draggable"
             disabled={!canOpen}
             aria-label={name}
-            touch-action="manipulation"
+            style={{touchAction: "manipulation"}}
             {...(!isTouch && {
               "data-tooltip-id": "dock-tooltip",
               "data-tooltip-content": name,

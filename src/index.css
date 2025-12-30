@@ -13,6 +13,9 @@ body {
   background-position: center; */
   background-color: #020617;
 }
+.touch-manipulation {
+  touch-action: manipulation;
+}
 
 .os-root {
   position: relative;

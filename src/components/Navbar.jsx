@@ -35,6 +35,12 @@ const Navbar = () => {
                 windows[type]?.isOpen && "bg-blue-500/20 text-blue-300"
               )}
               onPointerUp={(e) => handleActivate(e, type)}
+              onKeyDown={(e) => {
+                if(e.key === "Enter" || e.key === ""){
+                  e.preventDefault(); 
+                  toggleWindow(type);
+                }
+              }}
             >
               <p>{name}</p>
             </li>

@@ -38,7 +38,7 @@ const Finder = () => {
   const mappedKey = WINDOW_KEY_MAP[windowKey];
 
   if (mappedKey) {
-    const data = item.fileType === "img" ? { ...item, imageUrl: item.imageUrl } : item;
+    const data = item;
     openWindow(mappedKey, data);
     focusWindow(mappedKey); 
   }
