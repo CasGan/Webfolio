@@ -39,7 +39,6 @@ const WindowWrapper = (Component, windowKey) => {
         dragClickables: false,
         preventDefault: false,
         allowNativeTouchScrolling: true,
-        onPress: () => focusWindow(windowKey),
       });
 
       return () => instance.kill();
@@ -61,7 +60,11 @@ const WindowWrapper = (Component, windowKey) => {
         id={windowKey}
         ref={ref}
         className="absolute"
-        onPointerUp={() => focusWindow(windowKey)}
+        onPointerUp={(e) => {
+          if(e.currentTarget === e.target){
+            focusWindow(windowKey);
+          }
+        }}
       >
         <Component {...props} data={data} />
       </section>
