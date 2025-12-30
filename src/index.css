@@ -208,6 +208,7 @@ body {
 
   #window-controls {
     @apply flex gap-2;
+    touch-action: auto;
 
     .close {
       @apply size-3.5 rounded-full bg-[#ff6157] cursor-pointer;
@@ -224,6 +225,15 @@ body {
 
   #window-header {
     @apply flex items-center justify-between px-4 py-3 rounded-t-lg bg-gray-50 border-b border-gray-200 select-none text-sm text-gray-400;
+   touch-action: pan-x pan-y;
+    cursor: grab;
+    user-select: none;
+  }
+ 
+
+  /* Window controls should allow taps */
+  #window-controls {
+    touch-action: auto;
   }
 
   #browser {
@@ -420,6 +430,16 @@ body {
     }
   }
 
+  #finder .content li {
+    /* cursor: default; prevents misleading grab cursor */
+    /* user-select: none; prevents text selection */
+    touch-action: auto; /* prevents pointer/touch interference */
+  }
+  #finder .finder-file{
+    touch-action: none;
+    user-select: none; 
+  }
+  
   #finder {
     @apply absolute w-3xl left-40 top-20 shadow-2xl drop-shadow-2xl overflow-hidden rounded-xl;
 
@@ -463,6 +483,14 @@ body {
       }
     }
   }
+
+  /* Finder files look clickable on desktop */
+@media (hover: hover) {
+  #finder .finder-file {
+    cursor: pointer;
+  }
+}
+
 
   #txtfile {
     @apply w-md absolute top-36 right-32 bg-white shadow-2xl drop-shadow-2xl rounded-xl overflow-hidden;

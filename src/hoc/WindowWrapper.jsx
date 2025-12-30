@@ -3,46 +3,71 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLayoutEffect, useRef } from "react";
 import { Draggable } from "gsap/Draggable";
-
 const WindowWrapper = (Component, windowKey) => {
   const Wrapped = (props) => {
     const { focusWindow, windows } = useWindowStore();
-    const { isOpen, zIndex } = windows[windowKey];
     const ref = useRef(null);
 
-    useGSAP(() => {
-        const element = ref.current;
-        if(!element || !isOpen) return; 
-        // animation to open windows
-        gsap.fromTo(
-            element,
-            {scale: 0.8, opacity: 0, y: 40},
-            {scale: 1, opacity: 1, y: 0, duration: 0.3, ease: "power3.out"},
-        );
+    // Subscribe to the specific window's state
+    const windowState = windows[windowKey];
+    const isOpen = windowState?.isOpen ?? false; 
+    const zIndex = windowState?.zIndex ?? 0; 
+    const data = windowState?.data ?? null; 
 
+    useGSAP(() => {
+      const element = ref.current;
+      if (!element || !isOpen) return;
+
+      gsap.fromTo(
+        element,
+        { scale: 0.8, opacity: 0, y: 40 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }
+      );
     }, [isOpen]);
 
-    // animation for dragging windows
     useGSAP(() => {
-        const element = ref.current; 
+      const element = ref.current;
+      if (!element || !isOpen) return;
 
-        if(!element) return; 
-        const [instance] = Draggable.create(element, {onPress: () => focusWindow(windowKey)});
+      const header = element.querySelector("#window-header");
+      if (!header) return;
 
-        return () => instance.kill(); 
-    }, []);
+      const [instance] = Draggable.create(element, {
+        trigger: header,
+        type: "x,y",
+        allowContextMenu: true,
+        dragClickables: false,
+        preventDefault: false,
+        allowNativeTouchScrolling: true,
+      });
+
+      return () => instance.kill();
+    }, [isOpen]);
 
     useLayoutEffect(() => {
-        const element = ref.current;
-        if(!element) return; 
-        
-        element.style.display = isOpen ? "block" : "none"; 
+      const element = ref.current;
+      if (!element) return;
 
-    }, [isOpen]);
+      element.style.display = isOpen ? "block" : "none";
+      element.style.zIndex = zIndex; 
+    }, [isOpen, zIndex]);
+// early return AFTER all hooks 
+
+    if(!windowState) return null; 
 
     return (
-      <section id={windowKey} ref={ref} style={{ zIndex }} className="absolute">
-        <Component {...props} />
+      <section
+        id={windowKey}
+        ref={ref}
+        className="absolute"
+        onPointerUp={(e) => {
+          if(e.currentTarget === e.target){
+            focusWindow(windowKey);
+          }
+        }}
+        onPointerDown={() => focusWindow(windowKey)}
+      >
+        <Component {...props} data={data} />
       </section>
     );
   };
