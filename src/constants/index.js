@@ -494,7 +494,7 @@ const INITIAL_Z_INDEX = 1000;
 
 const WINDOW_CONFIG = {
   finder: {
-  isOpen: false,
+    isOpen: false,
     zIndex: INITIAL_Z_INDEX,
     data: null,
     top: 200,
