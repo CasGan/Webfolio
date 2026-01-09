@@ -1,7 +1,7 @@
+import { useRef, useEffect, useState } from "react";
 import { dockApps } from "#constants";
 import useWindowStore from "#store/window";
 import { Tooltip } from "react-tooltip";
-import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
@@ -16,34 +16,56 @@ const ANIMATION = {
   TAP_SCALE: 1.15,
 };
 
-const isTouch =
-  typeof window !== "undefined" &&
-  window.matchMedia("(pointer: coarse)").matches;
-
 const Dock = () => {
   const dockRef = useRef(null);
-  const { openWindow, closeWindow, windows } = useWindowStore();
+  const { openWindow, closeWindow, windows, resetWindows } = useWindowStore();
 
-  useGSAP(() => {
+  // Detect touch dynamically
+  const [isTouch, setIsTouch] = useState(
+    typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse)").matches
+  );
+
+  // Reset dock icons (GSAP) to original state
+  const resetDock = () => {
     const dock = dockRef.current;
     if (!dock) return;
+    const icons = dock.querySelectorAll(".dock-icon");
+    icons.forEach((icon) =>
+      gsap.to(icon, {
+        scale: 1,
+        y: 0,
+        zIndex: 0,
+        duration: ANIMATION.RESET_DURATION,
+        ease: "power1.out",
+      })
+    );
+  };
+
+  // Watch for touch/desktop changes
+  useEffect(() => {
+    const mql = window.matchMedia("(pointer: coarse)");
+
+    const handleMediaChange = (e) => {
+      setIsTouch(e.matches);
+      resetDock();        // Reset Dock icons
+      resetWindows();     // Reset open windows positions
+    };
+
+    mql.addEventListener("change", handleMediaChange);
+    return () => mql.removeEventListener("change", handleMediaChange);
+  }, [resetWindows]);
+
+  // GSAP hover effects for desktop
+  useGSAP(() => {
+    const dock = dockRef.current;
+    if (!dock || isTouch) return;
 
     const icons = dock.querySelectorAll(".dock-icon");
 
-    const resetIcons = () => {
-      icons.forEach((icon) =>
-        gsap.to(icon, {
-          scale: 1,
-          y: 0,
-          zIndex: 0,
-          duration: ANIMATION.RESET_DURATION,
-          ease: "power1.out",
-        })
-      );
-    };
-
     const handlePointerMove = (e) => {
       if (e.pointerType !== "mouse") return;
+
       const rect = dock.getBoundingClientRect();
 
       icons.forEach((icon) => {
@@ -51,8 +73,7 @@ const Dock = () => {
         const center = r.left - rect.left + r.width / 2;
         const dist = Math.abs(e.clientX - rect.left - center);
         const intensity = Math.exp(
-          -(dist ** ANIMATION.DISTANCE_EXPONENT) /
-            ANIMATION.FALLOFF_DIVISOR
+          -(dist ** ANIMATION.DISTANCE_EXPONENT) / ANIMATION.FALLOFF_DIVISOR
         );
 
         gsap.to(icon, {
@@ -65,15 +86,15 @@ const Dock = () => {
     };
 
     dock.addEventListener("pointermove", handlePointerMove);
-    dock.addEventListener("pointerleave", resetIcons);
-    dock.addEventListener("pointerup", resetIcons);
+    dock.addEventListener("pointerleave", resetDock);
+    dock.addEventListener("pointerup", resetDock);
 
     return () => {
       dock.removeEventListener("pointermove", handlePointerMove);
-      dock.removeEventListener("pointerleave", resetIcons);
-      dock.removeEventListener("pointerup", resetIcons);
+      dock.removeEventListener("pointerleave", resetDock);
+      dock.removeEventListener("pointerup", resetDock);
     };
-  }, []);
+  }, [isTouch]);
 
   const toggleApp = (id) => {
     const win = windows[id];
@@ -83,18 +104,14 @@ const Dock = () => {
 
   return (
     <section id="dock">
-      <div
-        ref={dockRef}
-        className="dock-container"
-        role="toolbar"
-      >
+      <div ref={dockRef} className="dock-container" role="toolbar">
         {dockApps.map(({ id, name, icon, canOpen }) => (
           <button
             key={id}
             className="dock-icon data-draggable"
             disabled={!canOpen}
             aria-label={name}
-            style={{touchAction: "manipulation"}}
+            style={{ touchAction: "manipulation" }}
             {...(!isTouch && {
               "data-tooltip-id": "dock-tooltip",
               "data-tooltip-content": name,
@@ -109,36 +126,18 @@ const Dock = () => {
             }}
             onPointerUp={(e) => {
               if (e.pointerType === "touch") {
-                gsap.to(e.currentTarget, {
-                  scale: 1,
-                  duration: 0.2,
-                });
+                gsap.to(e.currentTarget, { scale: 1, duration: 0.2 });
               }
-
               toggleApp(id);
             }}
           >
-            <img
-              src={`/images/${icon}`}
-              alt=""
-              draggable={false}
-            />
-
-            {/* Mobile-visible label */}
-            {isTouch && (
-              <span className="sr-only">{name}</span>
-            )}
+            <img src={`/images/${icon}`} alt="" draggable={false} />
+            {isTouch && <span className="sr-only">{name}</span>}
           </button>
         ))}
       </div>
 
-      {!isTouch && (
-        <Tooltip
-          id="dock-tooltip"
-          place="top"
-          className="tooltip"
-        />
-      )}
+      {!isTouch && <Tooltip id="dock-tooltip" place="top" className="tooltip" />}
     </section>
   );
 };

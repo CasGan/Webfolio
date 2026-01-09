@@ -1,6 +1,5 @@
 import { Draggable } from "gsap/Draggable";
 import gsap from "gsap";
-
 import { Dock, Navbar, Welcome, Home, DesktopBackground } from "#components";
 import {
   Browser,
@@ -12,14 +11,15 @@ import {
   Contact,
   Gallery,
 } from "#windows";
-
+import useWindowViewportSync from "#hooks/useWindowViewportSync";
 gsap.registerPlugin(Draggable);
 
 const App = () => {
+  useWindowViewportSync(); 
   return (
     <>
-      <DesktopBackground />
       <main className="os-root">
+        <DesktopBackground />
         <Navbar />
         <Welcome />
         <Dock />

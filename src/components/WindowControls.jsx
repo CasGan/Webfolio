@@ -12,7 +12,7 @@ const WindowControls = ({target}) => {
   return (
     <div id="window-controls">
        <div
-        className="close"
+        className="control close"
         role="button"
         aria-label="Close window"
         tabIndex={0}
@@ -21,8 +21,8 @@ const WindowControls = ({target}) => {
           if (e.detail === 0) handleClose(e);
         }}
       />
-        <div className="minimize" />
-        <div className="maximize"/>
+        {/* <div className="minimize" />
+        <div className="maximize"/> */}
     </div>
   )
 }

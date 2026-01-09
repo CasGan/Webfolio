@@ -129,13 +129,13 @@ const Home = () => {
       isDesktopActiveRef.current = true;
     };
 
-    // 🚫 Start on mobile
+    // Start on mobile
     if (mql.matches) {
       killDesktop();
       return;
     }
 
-    // 🖥 Initial desktop
+    //  Initial desktop
     initDesktop();
 
     const handleResize = () => {
