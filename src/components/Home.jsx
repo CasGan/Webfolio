@@ -135,7 +135,7 @@ const Home = () => {
       return;
     }
 
-    //  Initial desktop
+    //Initial desktop
     initDesktop();
 
     const handleResize = () => {

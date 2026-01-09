@@ -68,7 +68,7 @@ const WindowWrapper = (Component, windowKey) => {
         draggableInstance.applyBounds(); // optional, if you add bounds
         draggableInstance.update(); // resets internal coords
       }
-    }, [windows[windowKey].top, windows[windowKey].left]);
+    }, [windowState?.top, windowState?.left]);
 
     useLayoutEffect(() => {
       const element = ref.current;

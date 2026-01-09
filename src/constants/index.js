@@ -494,15 +494,15 @@ const INITIAL_Z_INDEX = 1000;
 
 const WINDOW_CONFIG = {
   finder: {
-    isOpen: false,
+  isOpen: false,
     zIndex: INITIAL_Z_INDEX,
     data: null,
-    top: 100,
-    left: 200,
-    width: 720,
-    height: 480,
-    defaultTop: 100,
-    defaultLeft: 200,
+    top: 200,
+    left: 300,
+    width: 800,
+    height: 600,
+    defaultTop: 200,
+    defaultLeft: 300,
   },
   contact: {
     isOpen: false,

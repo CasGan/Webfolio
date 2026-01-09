@@ -5,7 +5,7 @@ import WindowWrapper from "#hoc/WindowWrapper.jsx";
 const Contact = () => {
   return (
     <>
-      <div id="window-header" >
+      <div id="window-header">
         <WindowControls target="contact"/>
         <h2>Contact Me</h2>
       </div>
