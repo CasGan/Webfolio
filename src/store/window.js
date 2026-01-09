@@ -82,10 +82,7 @@ const useWindowStore = create(
         });
 
         // Minimal safe fix: fully clear transforms
-        // Cancel any pending timeout to prevent multiple callbacks
-        if (state._resetTimeout) {
-          clearTimeout(state._resetTimeout);
-        }
+        if (state._resetTimeout) clearTimeout(state._resetTimeout);
 
         state._resetTimeout = setTimeout(() => {
           windowKeys.forEach((key) => {
@@ -96,7 +93,36 @@ const useWindowStore = create(
           });
         }, 0);
       }),
+
+    // --- new: attach automatic resize/orientation listener ---
+    _attachResizeListener: () => {
+      const debounce = (fn, delay = 100) => {
+        let timer;
+        return () => {
+          clearTimeout(timer);
+          timer = setTimeout(fn, delay);
+        };
+      };
+
+      const handler = debounce(() => {
+        get().resetWindows();
+      }, 100);
+
+      window.addEventListener("resize", handler);
+      window.addEventListener("orientationchange", handler);
+
+      // optional: return cleanup function
+      return () => {
+        window.removeEventListener("resize", handler);
+        window.removeEventListener("orientationchange", handler);
+      };
+    },
   }))
 );
+
+// Automatically attach the listener once when the store is imported
+if (typeof window !== "undefined") {
+  useWindowStore.getState()._attachResizeListener();
+}
 
 export default useWindowStore;
