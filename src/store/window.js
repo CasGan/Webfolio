@@ -3,6 +3,21 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import gsap from "gsap";
 
+let _resetTimeout = null;
+const isMobile = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 640px)").matches;
+
+const getCenteredPosition = (width, height) => {
+  const margin = 12;
+  return {
+    top: Math.max((window.innerHeight - height) / 2, margin),
+    left: Math.max((window.innerWidth - width) / 2, margin),
+  };
+};
+
+const CASCADE_OFFSET = 24;
+
 const useWindowStore = create(
   immer((set, get) => ({
     windows: Object.fromEntries(
@@ -10,11 +25,10 @@ const useWindowStore = create(
     ),
     nextZIndex: INITIAL_Z_INDEX + 1,
 
-    // optional internal timeout ID for debounce
-    _resetTimeout: null,
-
     moveWindow: (windowKey, deltaX, deltaY) =>
       set((state) => {
+        if(isMobile()) return; 
+        
         const win = state.windows[windowKey];
         if (!win) return;
         if (!Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
@@ -26,10 +40,52 @@ const useWindowStore = create(
       set((state) => {
         const win = state.windows[windowKey];
         if (!win) return;
+
         win.isOpen = true;
-        win.zIndex = state.nextZIndex;
+        win.zIndex = state.nextZIndex++;
         win.data = data ?? win.data;
-        state.nextZIndex++;
+
+        // 📱 MOBILE → FULLSCREEN
+        if (isMobile()) {
+          win.top = 0;
+          win.left = 0;
+          win.width = window.innerWidth;
+          win.height = window.innerHeight;
+          return;
+        }
+
+        // 🖥 DESKTOP
+        const width = win.width ?? 600;
+        const height = win.height ?? 400;
+
+        // Finder → macOS-style cascade
+        if (windowKey === "finder") {
+          if (win._cascadeIndex == null) win._cascadeIndex = 0;
+
+          const base = getCenteredPosition(width, height);
+
+          let top = base.top + CASCADE_OFFSET * win._cascadeIndex;
+          let left = base.left + CASCADE_OFFSET * win._cascadeIndex;
+
+          const margin = 12;
+          top = Math.min(
+            Math.max(top, margin),
+            window.innerHeight - height - margin
+          );
+          left = Math.min(
+            Math.max(left, margin),
+            window.innerWidth - width - margin
+          );
+
+          win.top = top;
+          win.left = left;
+          win._cascadeIndex++;
+        } else {
+          // All other windows → centered
+          const { top, left } = getCenteredPosition(width, height);
+          win.top = top;
+          win.left = left;
+        }
       }),
 
     closeWindow: (windowKey) =>
@@ -50,6 +106,9 @@ const useWindowStore = create(
 
     resetWindows: () =>
       set((state) => {
+        Object.values(state.windows).forEach((win) => {
+          delete win._cascadeIndex;
+        });
         const isMobile = window.matchMedia("(max-width: 640px)").matches;
         const margin = 12;
         const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -64,27 +123,21 @@ const useWindowStore = create(
           const w = win.width || 600;
           const h = win.height || 400;
 
-          win.top = isMobile
-            ? clamp(
-                window.innerHeight / 2 - h / 2,
-                margin,
-                Math.max(margin, window.innerHeight - h - margin)
-              )
-            : win.defaultTop ?? 100;
-
-          win.left = isMobile
-            ? clamp(
-                window.innerWidth / 2 - w / 2,
-                margin,
-                Math.max(margin, window.innerWidth - w - margin)
-              )
-            : win.defaultLeft ?? 200;
+          if (isMobile) {
+            win.top = 0;
+            win.left = 0;
+            win.width = window.innerWidth;
+            win.height = window.innerHeight;
+          } else {
+            win.top = win.defaultTop ?? 100;
+            win.left = win.defaultLeft ?? 200;
+          }
         });
 
         // Minimal safe fix: fully clear transforms
-        if (state._resetTimeout) clearTimeout(state._resetTimeout);
+        if (_resetTimeout) clearTimeout(_resetTimeout);
 
-        state._resetTimeout = setTimeout(() => {
+        _resetTimeout = setTimeout(() => {
           windowKeys.forEach((key) => {
             const el = document.getElementById(key);
             if (el && el.id !== "welcome") {
@@ -114,15 +167,16 @@ const useWindowStore = create(
       // optional: return cleanup function
       return () => {
         window.removeEventListener("resize", handler);
-        window.removeEventListener("orientationchange", handler);
+        window.removeEventListener("orientationchangge", handler);
       };
     },
   }))
 );
-
+let _cleanupResizeListener = null;
 // Automatically attach the listener once when the store is imported
 if (typeof window !== "undefined") {
-  useWindowStore.getState()._attachResizeListener();
+  _cleanupResizeListener = useWindowStore.getState()._attachResizeListener();
 }
+export { _cleanupResizeListener };
 
 export default useWindowStore;

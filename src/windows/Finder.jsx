@@ -4,14 +4,25 @@ import WindowWrapper from "#hoc/WindowWrapper.jsx";
 import useLocationStore from "#store/location.js";
 import useWindowStore from "#store/window.js";
 import clsx from "clsx";
-
-
 import { Search } from "lucide-react";
-
+import { useEffect } from "react";
+import gsap
+ from "gsap";
 const Finder = () => {
   const { activeLocation, setActiveLocation } = useLocationStore();
   const { openWindow, focusWindow } = useWindowStore();
+
+  const isMobile =
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 640px)").matches;
+
   
+useEffect(() => {
+  if (window.matchMedia("(max-width: 640px)").matches) {
+    gsap.set("#finder .finder-file", { clearProps: "all" });
+  }
+}, []);
+
   const WINDOW_KEY_MAP = {
     txtfile: 'txtfile',
     imgfile: 'imgfile',
@@ -82,7 +93,7 @@ const Finder = () => {
           {activeLocation?.children.map((item) => (
             <li
               key={item.id}
-              className={`${item.position} finder-file`}
+              className={clsx("finder-file", !isMobile && item.position)}
               role="button"
               onPointerUp={(e) =>{
                 e.stopPropagation();
