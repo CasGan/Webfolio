@@ -1,25 +1,36 @@
 import { useEffect } from "react";
 import useWindowStore from "#store/window";
 
+// Debounce helper
+const debounce = (fn, delay = 100) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+};
+
 export default function useWindowViewportSync() {
+  const updateMobileState = useWindowStore((s) => s.updateMobileState);
   const resetWindows = useWindowStore((s) => s.resetWindows);
 
   useEffect(() => {
-    let timer;
-    const handler = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        resetWindows();
-      }, 100);
-    };
+    // Handler that updates mobile state and resets windows
+    const handleResize = debounce(() => {
+      updateMobileState(); // keep isMobile accurate
+      resetWindows();      // reposition windows if needed
+    }, 100);
 
-    window.addEventListener("resize", handler);
-    window.addEventListener("orientationchange", handler);
+    // Listen to resize and orientation changes
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    // Initial sync in case the app loads on mobile/resized viewport
+    handleResize();
 
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", handler);
-      window.removeEventListener("orientationchange", handler);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
     };
-  }, [resetWindows]);
+  }, [updateMobileState, resetWindows]);
 }

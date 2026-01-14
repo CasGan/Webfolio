@@ -1,4 +1,4 @@
-import useWindowStore from "#store/window.js";
+import useWindowStore, { debounce } from "#store/window.js";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLayoutEffect, useRef } from "react";
@@ -6,22 +6,30 @@ import { Draggable } from "gsap/Draggable";
 
 const WindowWrapper = (Component, windowKey) => {
   const Wrapped = (props) => {
-    const { focusWindow, windows, isMobile } = useWindowStore();
+    const { focusWindow, windows, isMobile, resetVersion } = useWindowStore();
     const ref = useRef(null);
+    const draggableRef = useRef(null);
 
     const windowState = windows[windowKey];
     const isOpen = windowState?.isOpen ?? false;
     const zIndex = windowState?.zIndex ?? 0;
     const data = windowState?.data ?? null;
-    
-    // Debounce Helper 
-    const debounce = (fn, delay = 100) => {
-      let timer;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), delay);
-      };
-    };
+    const lastResetVersion = useRef(resetVersion);
+
+    useGSAP(
+      () => {
+        if (lastResetVersion.current === resetVersion) return;
+        lastResetVersion.current = resetVersion;
+
+        const element = ref.current;
+        if (!element || !isOpen) return;
+
+        if (!windowState?.preventTransformReset) {
+          gsap.set(element, { clearProps: "transform" });
+        }
+      },
+      { dependencies: [resetVersion] }
+    );
 
     // Open animation
     useGSAP(() => {
@@ -54,21 +62,24 @@ const WindowWrapper = (Component, windowKey) => {
         height: root.clientHeight - 50,
       });
 
-      const instance = Draggable.create(element, {
-        trigger: header,
-        type: "x,y",
-        allowContextMenu: true,
-        dragClickables: false,
-        bounds: getRootBounds(),
+      if (!draggableRef.current) {
+        draggableRef.current = Draggable.create(element, {
+          trigger: header,
+          type: "x,y",
+          allowContextMenu: true,
+          dragClickables: false,
+          bounds: getRootBounds(),
 
-        onDragEnd() {
-          const x = this.x || 0;
-          const y = this.y || 0;
+          onDragEnd() {
+            const x = this.x || 0;
+            const y = this.y || 0;
 
-          useWindowStore.getState().moveWindow(windowKey, x, y);
-          gsap.set(element, { x: 0, y: 0 });
-        },
-      })[0];
+            useWindowStore.getState().moveWindow(windowKey, x, y);
+            gsap.set(element, { x: 0, y: 0 });
+          },
+        })[0];
+      }
+      const instance = draggableRef.current; 
 
       const handleResize = debounce(() => {
         const bounds = getRootBounds();
@@ -76,9 +87,10 @@ const WindowWrapper = (Component, windowKey) => {
         // Apply new bounds
         instance.applyBounds(bounds);
 
-        // Get last stored position from state
-        const lastX = windowState.left ?? 0;
-        const lastY = windowState.top ?? 0;
+        // Get current stored position from state (fresh read to avoid stale closure)
+        const currentState = useWindowStore.getState().windows[windowKey];
+        const lastX = currentState?.left ?? 0;
+        const lastY = currentState?.top ?? 0;
 
         // Clamp position to new bounds
         const clampedX = Math.min(
@@ -90,18 +102,24 @@ const WindowWrapper = (Component, windowKey) => {
           bounds.top + bounds.height - element.offsetHeight
         );
 
-        // Set element position so React state matches
-        gsap.set(element, { x: 0, y: 0 });
-        useWindowStore.getState().moveWindow(windowKey, clampedX, clampedY);
+        // compute deltas from current position
+        const deltaX = clampedX - lastX;
+        const deltaY = clampedY - lastY;
+        //only update if position needs to change
+        if (deltaX !== 0 || deltaY !== 0) {
+          gsap.set(element, { x: 0, y: 0 });
+          useWindowStore.getState().moveWindow(windowKey, deltaX, deltaY);
+        }
       }, 100);
 
       window.addEventListener("resize", handleResize);
 
       return () => {
-        instance.kill();
+        instance?.kill();
+        draggableRef.current = null; 
         window.removeEventListener("resize", handleResize);
       };
-    }, [isOpen, isMobile, windowState?.left, windowState?.top]);
+    }, [isOpen, isMobile]);
 
     // Layout effect
     useLayoutEffect(() => {
@@ -137,7 +155,7 @@ const WindowWrapper = (Component, windowKey) => {
       <section
         id={windowKey}
         ref={ref}
-        className="absolute flex flex-col overflow-hidden"
+        className="flex flex-col"
         onPointerUp={(e) => {
           if (e.currentTarget === e.target) focusWindow(windowKey);
         }}

@@ -37,8 +37,7 @@ body {
 }
 .window-content {
   flex: 1;
-  min-height: 0; /* REQUIRED for flex layout */
-  overflow: hidden; 
+  min-height: 0; /* REQUIRED for flex layout */ 
   -webkit-overflow-scrolling: touch;
 }
 
@@ -453,9 +452,6 @@ body {
     }
 
     /* Content wrapper to center loading/error states */
-    .resume-content {
-      @apply p-4 overflow-y-auto flex-1 min-h-0;
-    }
     .resume-content {
       padding: 1rem;
       overflow-y: auto;

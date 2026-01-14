@@ -1,10 +1,8 @@
 import { INITIAL_Z_INDEX, WINDOW_CONFIG } from "#constants";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import gsap from "gsap";
 
 // Module-scope constants
-let _resetTimeout = null;
 const DEFAULT_WINDOW_TOP = 100;
 const DEFAULT_WINDOW_LEFT = 200;
 const CASCADE_OFFSET = 24;
@@ -37,6 +35,13 @@ const useWindowStore = create(
       Object.entries(WINDOW_CONFIG).map(([k, v]) => [k, { ...v }])
     ),
     nextZIndex: INITIAL_Z_INDEX + 1,
+
+    resetVersion: 0,
+    
+    updateMobileState: () => 
+      set((state) => {
+        state.isMobile = isMobile(); 
+      }),
 
     moveWindow: (windowKey, deltaX, deltaY) =>
       set((state) => {
@@ -81,8 +86,16 @@ const useWindowStore = create(
         if (windowKey === "finder") {
           if (win._cascadeIndex == null) win._cascadeIndex = 0;
           const base = getCenteredPosition(width, height);
-          win.top = clamp(base.top + CASCADE_OFFSET * win._cascadeIndex, WINDOW_MARGIN, window.innerHeight - height - WINDOW_MARGIN);
-          win.left = clamp(base.left + CASCADE_OFFSET * win._cascadeIndex, WINDOW_MARGIN, window.innerWidth - width - WINDOW_MARGIN);
+          win.top = clamp(
+            base.top + CASCADE_OFFSET * win._cascadeIndex,
+            WINDOW_MARGIN,
+            window.innerHeight - height - WINDOW_MARGIN
+          );
+          win.left = clamp(
+            base.left + CASCADE_OFFSET * win._cascadeIndex,
+            WINDOW_MARGIN,
+            window.innerWidth - width - WINDOW_MARGIN
+          );
           win._cascadeIndex++;
         } else {
           const { top, left } = getCenteredPosition(width, height);
@@ -113,14 +126,14 @@ const useWindowStore = create(
           delete win._cascadeIndex;
         });
 
-        const windowKeys = Object.keys(state.windows).filter((key) => state.windows[key].isOpen);
+        const windowKeys = Object.keys(state.windows).filter(
+          (key) => state.windows[key].isOpen
+        );
 
         windowKeys.forEach((key) => {
           const win = state.windows[key];
-          const w = win.width || 600;
-          const h = win.height || 400;
 
-          if (isMobile()) {
+          if (get().isMobile()) {
             win.top = 0;
             win.left = 0;
             win.width = window.innerWidth;
@@ -131,17 +144,7 @@ const useWindowStore = create(
           }
         });
 
-        if (_resetTimeout) clearTimeout(_resetTimeout);
-
-        _resetTimeout = setTimeout(() => {
-          windowKeys.forEach((key) => {
-            const el = document.getElementById(key);
-            const win = get().windows[key];
-            if (el && !win.preventTransformReset) {
-              gsap.set(el, { clearProps: "transform" });
-            }
-          });
-        }, 0);
+        state.resetVersion++;
       }),
   }))
 );

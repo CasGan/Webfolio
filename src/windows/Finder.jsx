@@ -8,48 +8,47 @@ import { Search } from "lucide-react";
 import { useEffect } from "react";
 import gsap from "gsap";
 
-
 const Finder = () => {
   const { activeLocation, setActiveLocation } = useLocationStore();
   const { openWindow, focusWindow, isMobile } = useWindowStore();
 
-useEffect(() => {
-  if(isMobile){
-    gsap.set("#finder .finder-file", {clearProps: "all"});
-  }
-}, [isMobile]);
+  useEffect(() => {
+    if (isMobile) {
+      gsap.set("#finder .finder-file", { clearProps: "all" });
+    }
+  }, [isMobile]);
 
   const WINDOW_KEY_MAP = {
-    txtfile: 'txtfile',
-    imgfile: 'imgfile',
+    txtfile: "txtfile",
+    imgfile: "imgfile",
   };
 
- const openItem = (item) => {
-  if (item.fileType === "pdf") {
-    openWindow("resume");
-    focusWindow("resume");
-    return;
-  }
+  const openItem = (item) => {
+    if (item.fileType === "pdf") {
+      openWindow("resume");
+      focusWindow("resume");
+      return;
+    }
 
-  if (item.kind === "folder") {
-    setActiveLocation(item);
-    return;
-  }
+    if (item.kind === "folder") {
+      setActiveLocation(item);
+      return;
+    }
 
-  if (["fig", "url"].includes(item.fileType) && item.href) {
-    window.open(item.href, "_blank");
-    return;
-  }
+    if (["fig", "url"].includes(item.fileType) && item.href) {
+      window.open(item.href, "_blank");
+      return;
+    }
 
-  const windowKey = `${item.fileType}${item.kind}`;
-  const mappedKey = WINDOW_KEY_MAP[windowKey];
+    const windowKey = `${item.fileType}${item.kind}`;
+    const mappedKey = WINDOW_KEY_MAP[windowKey];
 
-  if (mappedKey) {
-    const data = item;
-    openWindow(mappedKey, data);
-    focusWindow(mappedKey); 
-  }
-};
+    if (mappedKey) {
+      const data = item;
+      openWindow(mappedKey, data);
+      focusWindow(mappedKey);
+    }
+  };
 
   const renderList = (name, items) => (
     <div>
@@ -91,7 +90,7 @@ useEffect(() => {
               key={item.id}
               className={clsx("finder-file", !isMobile && item.position)}
               role="button"
-              onPointerUp={(e) =>{
+              onPointerUp={(e) => {
                 e.stopPropagation();
                 openItem(item);
               }}
