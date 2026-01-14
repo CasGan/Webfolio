@@ -6,15 +6,22 @@ import { Draggable } from "gsap/Draggable";
 
 const WindowWrapper = (Component, windowKey) => {
   const Wrapped = (props) => {
-    const { focusWindow, windows } = useWindowStore();
+    const { focusWindow, windows, isMobile } = useWindowStore();
     const ref = useRef(null);
 
     const windowState = windows[windowKey];
     const isOpen = windowState?.isOpen ?? false;
     const zIndex = windowState?.zIndex ?? 0;
     const data = windowState?.data ?? null;
-
-    const isMobile = typeof window !== "undefined" && window.innerWidth <= 640;
+    
+    // Debounce Helper 
+    const debounce = (fn, delay = 100) => {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    };
 
     // Open animation
     useGSAP(() => {
@@ -28,57 +35,81 @@ const WindowWrapper = (Component, windowKey) => {
     }, [isOpen]);
 
     // Draggable only on desktop
-  useGSAP(() => {
-  if (!windowState || isMobile) return;
+    useGSAP(() => {
+      if (!windowState || isMobile) return;
 
-  const element = ref.current;
-  if (!element || !isOpen) return;
+      const element = ref.current;
+      if (!element || !isOpen) return;
 
-  const header = element.querySelector("#window-header");
-  if (!header) return;
+      const header = element.querySelector("#window-header");
+      if (!header) return;
 
-  const root = document.querySelector(".os-root");
-  if(!root) return; 
+      const root = document.querySelector(".os-root");
+      if (!root) return;
 
-  const rootBounds = { top: 50, left: 0, width: root.clientWidth, height: root.clientHeight - 50,};
-  const instance = Draggable.create(element, {
-    trigger: header,
-    type: "x,y",
-    allowContextMenu: true,
-    dragClickables: false,
-    bounds: rootBounds,
+      const getRootBounds = () => ({
+        top: 50,
+        left: 0,
+        width: root.clientWidth,
+        height: root.clientHeight - 50,
+      });
 
-    onDragEnd() {
-      // Use GSAP's internal values (NOT React state)
-      const x = this.x || 0;
-      const y = this.y || 0;
+      const instance = Draggable.create(element, {
+        trigger: header,
+        type: "x,y",
+        allowContextMenu: true,
+        dragClickables: false,
+        bounds: getRootBounds(),
 
-      useWindowStore.getState().moveWindow(
-        windowKey,
-        x,
-        y
-      );
+        onDragEnd() {
+          const x = this.x || 0;
+          const y = this.y || 0;
 
-      // Reset transform so React owns position
-      gsap.set(element, { x: 0, y: 0 });
-    },
-  })[0];
+          useWindowStore.getState().moveWindow(windowKey, x, y);
+          gsap.set(element, { x: 0, y: 0 });
+        },
+      })[0];
 
- const handleResize = () => instance.applyBounds(root);
+      const handleResize = debounce(() => {
+        const bounds = getRootBounds();
 
+        // Apply new bounds
+        instance.applyBounds(bounds);
 
-  window.addEventListener("resize", handleResize);
+        // Get last stored position from state
+        const lastX = windowState.left ?? 0;
+        const lastY = windowState.top ?? 0;
 
-  return () => {
-    instance.kill();
-    window.removeEventListener("resize", handleResize);
-  };
-}, [isOpen, isMobile]);
+        // Clamp position to new bounds
+        const clampedX = Math.min(
+          Math.max(lastX, bounds.left),
+          bounds.left + bounds.width - element.offsetWidth
+        );
+        const clampedY = Math.min(
+          Math.max(lastY, bounds.top),
+          bounds.top + bounds.height - element.offsetHeight
+        );
+
+        // Set element position so React state matches
+        gsap.set(element, { x: 0, y: 0 });
+        useWindowStore.getState().moveWindow(windowKey, clampedX, clampedY);
+      }, 100);
+
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        instance.kill();
+        window.removeEventListener("resize", handleResize);
+      };
+    }, [isOpen, isMobile, windowState?.left, windowState?.top]);
 
     // Layout effect
     useLayoutEffect(() => {
       const element = ref.current;
       if (!element) return;
+
+      // Guard against undefined windowState
+      if (!windowState) return;
 
       element.style.display = isOpen ? "flex" : "none";
       element.style.zIndex = zIndex;
@@ -98,7 +129,7 @@ const WindowWrapper = (Component, windowKey) => {
         element.style.width = ""; // CSS width
         element.style.height = ""; // CSS height
       }
-    }, [isOpen, zIndex, windowState?.top, windowState?.left, isMobile]);
+    }, [isOpen, zIndex, windowState, isMobile]);
 
     if (!windowState) return null;
 

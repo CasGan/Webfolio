@@ -14,26 +14,51 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 const PDF_PATH = "/files/resume.pdf";
 
+// Simple debounce helper
+const debounce = (fn, delay = 100) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+};
+
 const Resume = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
-  const [pageWidth, setPageWidth] = useState(700);
+  const [pageWidth, setPageWidth] = useState(620); // sensible default
 
   const containerRef = useRef();
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const el = containerRef.current;
+    if (!el) return;
 
-    const updateWidth = () => {
-      const w = containerRef.current.clientWidth;
-      if (w > 0 && w !== pageWidth) setPageWidth(Math.min(w * 0.92, 620));
+    // Compute page width based on container size
+    const computeWidth = () => {
+      const w = el.clientWidth;
+      const next = w > 0 ? Math.min(w * 0.92, 620) : 620;
+      setPageWidth((prev) => (prev === next ? prev : next));
     };
 
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, [pageWidth]);
-  
+    const debouncedCompute = debounce(computeWidth, 100);
+
+    // Observe size changes
+    const ro = new ResizeObserver(debouncedCompute);
+    ro.observe(el);
+
+    // Initial measurement
+    computeWidth();
+
+    // Fallback: listen to window resize
+    window.addEventListener("resize", debouncedCompute);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", debouncedCompute);
+    };
+  }, []);
+
   const handleLoadSuccess = () => {
     setIsLoading(false);
     setLoadError(null);
@@ -42,7 +67,9 @@ const Resume = () => {
   const handleLoadError = (err) => {
     console.error("Failed to load PDF:", err);
     setIsLoading(false);
-    setLoadError("Failed to load resume. Please try downloading it instead.");
+    setLoadError(
+      "Failed to load resume. Please try downloading it instead."
+    );
   };
 
   return (
@@ -83,6 +110,7 @@ const Resume = () => {
             <Page
               pageNumber={1}
               width={pageWidth}
+              scale={1.75}
               renderTextLayer
               renderAnnotationLayer
             />

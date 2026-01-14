@@ -5,12 +5,12 @@ const navLinks = [
     type: "finder",
   },
   {
-    id: 3,
+    id: 2,
     name: "Contact",
     type: "contact",
   },
   {
-    id: 4,
+    id: 3,
     name: "Resume",
     type: "resume",
   },
@@ -42,18 +42,18 @@ const dockApps = [
     icon: "folder-secret.png",
     canOpen: true,
   },
-  {
-    id: "browser",
-    name: "Articles", // was "Safari"
-    icon: "opera-gx.png",
-    canOpen: true,
-  },
-  {
-    id: "photos",
-    name: "Gallery", // was "Photos"
-    icon: "gallery-img.png",
-    canOpen: true,
-  },
+  // {
+  //   id: "browser",
+  //   name: "Articles", // was "Safari"
+  //   icon: "opera-gx.png",
+  //   canOpen: true,
+  // },
+  // {
+  //   id: "photos",
+  //   name: "Gallery", // was "Photos"
+  //   icon: "gallery-img.png",
+  //   canOpen: true,
+  // },
   {
     id: "contact",
     name: "Contact", // or "Get in touch"
@@ -255,7 +255,7 @@ const WORK_LOCATION = {
           position: "top-10 right-20",
         },
         {
-          id: 4,
+          id: 3,
           name: "nike.png",
           icon: "/images/image.png",
           kind: "file",
@@ -264,7 +264,7 @@ const WORK_LOCATION = {
           imageUrl: "/images/project-1.png",
         },
         {
-          id: 5,
+          id: 4,
           name: "Design.fig",
           icon: "/images/plain.png",
           kind: "file",
@@ -308,7 +308,7 @@ const WORK_LOCATION = {
           position: "top-20 left-20",
         },
         {
-          id: 4,
+          id: 3,
           name: "ai-resume-analyzer.png",
           icon: "/images/image.png",
           kind: "file",
@@ -317,7 +317,7 @@ const WORK_LOCATION = {
           imageUrl: "/images/project-2.png",
         },
         {
-          id: 5,
+          id: 4,
           name: "Design.fig",
           icon: "/images/plain.png",
           kind: "file",
@@ -361,7 +361,7 @@ const WORK_LOCATION = {
           position: "top-10 right-20",
         },
         {
-          id: 4,
+          id: 3,
           name: "food-delivery-app.png",
           icon: "/images/image.png",
           kind: "file",
@@ -370,7 +370,7 @@ const WORK_LOCATION = {
           imageUrl: "/images/project-3.png",
         },
         {
-          id: 5,
+          id: 4,
           name: "Design.fig",
           icon: "/images/plain.png",
           kind: "file",
@@ -521,33 +521,33 @@ const WINDOW_CONFIG = {
     data: null,
     top: 80,
     left: 360,
-    width: 400,
-    height: 400,
+    width: 640,
+    height: 720,
     defaultTop: 80,
     defaultLeft: 360,
   },
-  browser: {
-    isOpen: false,
-    zIndex: INITIAL_Z_INDEX,
-    data: null,
-    top: 120,
-    left: 260,
-    width: 900,
-    height: 600,
-    defaultTop: 120,
-    defaultLeft: 260,
-  },
-  photos: {
-    isOpen: false,
-    zIndex: INITIAL_Z_INDEX,
-    data: null,
-    top: 200,
-    left: 300,
-    width: 800,
-    height: 600,
-    defaultTop: 200,
-    defaultLeft: 300,
-  },
+  // browser: {
+  //   isOpen: false,
+  //   zIndex: INITIAL_Z_INDEX,
+  //   data: null,
+  //   top: 120,
+  //   left: 260,
+  //   width: 900,
+  //   height: 600,
+  //   defaultTop: 120,
+  //   defaultLeft: 260,
+  // },
+  // photos: {
+  //   isOpen: false,
+  //   zIndex: INITIAL_Z_INDEX,
+  //   data: null,
+  //   top: 200,
+  //   left: 300,
+  //   width: 800,
+  //   height: 600,
+  //   defaultTop: 200,
+  //   defaultLeft: 300,
+  // },
   terminal: {
     isOpen: false,
     zIndex: INITIAL_Z_INDEX,
@@ -581,6 +581,12 @@ const WINDOW_CONFIG = {
     defaultTop: 180,
     defaultLeft: 380,
   },
+  welcome: {
+    isOpen: false, 
+    zIndex: INITIAL_Z_INDEX, 
+    data: null, 
+    preventTransformReset: true,
+  }
 };
 
 export { INITIAL_Z_INDEX, WINDOW_CONFIG };

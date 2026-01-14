@@ -6,22 +6,18 @@ import useWindowStore from "#store/window.js";
 import clsx from "clsx";
 import { Search } from "lucide-react";
 import { useEffect } from "react";
-import gsap
- from "gsap";
+import gsap from "gsap";
+
+
 const Finder = () => {
   const { activeLocation, setActiveLocation } = useLocationStore();
-  const { openWindow, focusWindow } = useWindowStore();
+  const { openWindow, focusWindow, isMobile } = useWindowStore();
 
-  const isMobile =
-  typeof window !== "undefined" &&
-  window.matchMedia("(max-width: 640px)").matches;
-
-  
 useEffect(() => {
-  if (window.matchMedia("(max-width: 640px)").matches) {
-    gsap.set("#finder .finder-file", { clearProps: "all" });
+  if(isMobile){
+    gsap.set("#finder .finder-file", {clearProps: "all"});
   }
-}, []);
+}, [isMobile]);
 
   const WINDOW_KEY_MAP = {
     txtfile: 'txtfile',
