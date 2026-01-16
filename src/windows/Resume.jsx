@@ -52,6 +52,7 @@ const Resume = () => {
     window.addEventListener("resize", debouncedCompute);
 
     return () => {
+      debouncedCompute.cancel(); 
       ro.disconnect();
       window.removeEventListener("resize", debouncedCompute);
     };
