@@ -5,12 +5,12 @@ const navLinks = [
     type: "finder",
   },
   {
-    id: 3,
+    id: 2,
     name: "Contact",
     type: "contact",
   },
   {
-    id: 4,
+    id: 3,
     name: "Resume",
     type: "resume",
   },
@@ -42,18 +42,18 @@ const dockApps = [
     icon: "folder-secret.png",
     canOpen: true,
   },
-  {
-    id: "browser",
-    name: "Articles", // was "Safari"
-    icon: "opera-gx.png",
-    canOpen: true,
-  },
-  {
-    id: "photos",
-    name: "Gallery", // was "Photos"
-    icon: "gallery-img.png",
-    canOpen: true,
-  },
+  // {
+  //   id: "browser",
+  //   name: "Articles", // was "Safari"
+  //   icon: "opera-gx.png",
+  //   canOpen: true,
+  // },
+  // {
+  //   id: "photos",
+  //   name: "Gallery", // was "Photos"
+  //   icon: "gallery-img.png",
+  //   canOpen: true,
+  // },
   {
     id: "contact",
     name: "Contact", // or "Get in touch"
@@ -255,7 +255,7 @@ const WORK_LOCATION = {
           position: "top-10 right-20",
         },
         {
-          id: 4,
+          id: 3,
           name: "nike.png",
           icon: "/images/image.png",
           kind: "file",
@@ -264,7 +264,7 @@ const WORK_LOCATION = {
           imageUrl: "/images/project-1.png",
         },
         {
-          id: 5,
+          id: 4,
           name: "Design.fig",
           icon: "/images/plain.png",
           kind: "file",
@@ -308,7 +308,7 @@ const WORK_LOCATION = {
           position: "top-20 left-20",
         },
         {
-          id: 4,
+          id: 3,
           name: "ai-resume-analyzer.png",
           icon: "/images/image.png",
           kind: "file",
@@ -317,7 +317,7 @@ const WORK_LOCATION = {
           imageUrl: "/images/project-2.png",
         },
         {
-          id: 5,
+          id: 4,
           name: "Design.fig",
           icon: "/images/plain.png",
           kind: "file",
@@ -361,7 +361,7 @@ const WORK_LOCATION = {
           position: "top-10 right-20",
         },
         {
-          id: 4,
+          id: 3,
           name: "food-delivery-app.png",
           icon: "/images/image.png",
           kind: "file",
@@ -370,7 +370,7 @@ const WORK_LOCATION = {
           imageUrl: "/images/project-3.png",
         },
         {
-          id: 5,
+          id: 4,
           name: "Design.fig",
           icon: "/images/plain.png",
           kind: "file",
@@ -493,14 +493,100 @@ export const locations = {
 const INITIAL_Z_INDEX = 1000;
 
 const WINDOW_CONFIG = {
-  finder: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  contact: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  resume: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  browser: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  photos: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  terminal: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  txtfile: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
-  imgfile: { isOpen: false, zIndex: INITIAL_Z_INDEX, data: null },
+  finder: {
+    isOpen: false,
+    zIndex: INITIAL_Z_INDEX,
+    data: null,
+    top: 200,
+    left: 300,
+    width: 800,
+    height: 600,
+    defaultTop: 200,
+    defaultLeft: 300,
+  },
+  contact: {
+    isOpen: false,
+    zIndex: INITIAL_Z_INDEX,
+    data: null,
+    top: 140,
+    left: 420,
+    width: 600,
+    height: 400,
+    defaultTop: 140,
+    defaultLeft: 420,
+  },
+  resume: {
+    isOpen: false,
+    zIndex: INITIAL_Z_INDEX,
+    data: null,
+    top: 80,
+    left: 360,
+    width: 640,
+    height: 720,
+    defaultTop: 80,
+    defaultLeft: 360,
+  },
+  // browser: {
+  //   isOpen: false,
+  //   zIndex: INITIAL_Z_INDEX,
+  //   data: null,
+  //   top: 120,
+  //   left: 260,
+  //   width: 900,
+  //   height: 600,
+  //   defaultTop: 120,
+  //   defaultLeft: 260,
+  // },
+  // photos: {
+  //   isOpen: false,
+  //   zIndex: INITIAL_Z_INDEX,
+  //   data: null,
+  //   top: 200,
+  //   left: 300,
+  //   width: 800,
+  //   height: 600,
+  //   defaultTop: 200,
+  //   defaultLeft: 300,
+  // },
+  terminal: {
+    isOpen: false,
+    zIndex: INITIAL_Z_INDEX,
+    data: null,
+    top: 160,
+    left: 240,
+    width: 640,
+    height: 420,
+    defaultTop: 160,
+    defaultLeft: 240,
+  },
+  txtfile: {
+    isOpen: false,
+    zIndex: INITIAL_Z_INDEX,
+    data: null,
+    top: 200,
+    left: 500,
+    width: 500,
+    height: 360,
+    defaultTop: 200,
+    defaultLeft: 500,
+  },
+  imgfile: {
+    isOpen: false,
+    zIndex: INITIAL_Z_INDEX,
+    data: null,
+    top: 180,
+    left: 380,
+    width: 600,
+    height: 420,
+    defaultTop: 180,
+    defaultLeft: 380,
+  },
+  welcome: {
+    isOpen: false, 
+    zIndex: INITIAL_Z_INDEX, 
+    data: null, 
+    preventTransformReset: true,
+  }
 };
 
 export { INITIAL_Z_INDEX, WINDOW_CONFIG };
