@@ -4,9 +4,9 @@
 
 html,
 body {
-  width: 100vw;
+  width: 100dvw;
   overflow-x: hidden;
-  height: 100vh;
+  height: 100dvh;
   /* background-image: url("/images/wallpaper.png");
   background-size: cover;
   background-repeat: no-repeat;
@@ -51,10 +51,6 @@ body {
            transition-colors
            cursor-pointer;
   }
-  .zoom-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
   .zoom-btn:active {
     transform: scale(0.96);
   }
@@ -89,10 +85,10 @@ body {
 
 @layer utilities {
   .fluid-subtitle {
-    font-size: clamp(1.25rem, 2.8vw, 2.25rem);
+    font-size: clamp(1.25rem, 2.8dvw, 2.25rem);
   }
   .fluid-title {
-    font-size: clamp(3rem, 8vw, 8rem);
+    font-size: clamp(3rem, 8dvw, 8rem);
   }
 }
 
@@ -472,8 +468,8 @@ body {
     flex-direction: column;
 
     width: 640px;
-    max-width: 90vw;
-    height: 80vh;
+    max-width: 90dvw;
+    height: 80dvh;
     max-height: 90vh;
 
     /* Window header */

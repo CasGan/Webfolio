@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { WindowControls } from "#components/index.js";
 import WindowWrapper from "#hoc/WindowWrapper.jsx";
 import ResumeDownload from "#components/ResumeDownload.jsx";
-import { debounce } from "#store/window";
+import { debounce, clamp } from "#store/window";
 import { AlertCircle, Loader, RotateCcw, Plus, Minus } from "lucide-react";
 import { pdfjs, Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -18,9 +18,7 @@ const PDF_PATH = "/files/resume.pdf";
 // Zoom constants (hard-capped for performance)
 const ZOOM_MIN = 0.95;
 const ZOOM_MAX = 2.25;
-const ZOOM_STEP = 0.15;
-
-const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+const ZOOM_STEP = 0.10;
 
 const Resume = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +38,7 @@ const Resume = () => {
 
     const computeWidth = () => {
       const w = el.clientWidth;
-      
+
       const next = w > 0 ? Math.min(w * 0.92, 620) : 620;
       setPageWidth((prev) => (prev === next ? prev : next));
     };
@@ -85,28 +83,26 @@ const Resume = () => {
         <h2 className="font-medium text-sm text-gray-500">Resume.pdf</h2>
 
         {/* Zoom controls (buttons are additive, not required for gestures) */}
-       <div className="zoom-controls">
-  <button className="zoom-btn" onPointerDown={zoomOut}>
-    <Minus className="w-4 h-4" />
-  </button>
+        <div className="zoom-controls">
+          <button className="zoom-btn" onClick={zoomOut} aria-label="Zoom out">
+            <Minus className="w-4 h-4" />
+          </button>
 
-  <span className="zoom-value">
-    {Math.round(zoom * 100)}%
-  </span>
+          <span className="zoom-value">{Math.round(zoom * 100)}%</span>
 
-  <button className="zoom-btn" onPointerDown={zoomIn}>
-    <Plus className="w-4 h-4" />
-  </button>
+          <button className="zoom-btn" onClick={zoomIn} aria-label="Zoom in">
+            <Plus className="w-4 h-4" />
+          </button>
 
-  <button
-    className="zoom-btn reset"
-    onPointerDown={resetZoom}
-    aria-label="Reset zoom"
-  >
-    <RotateCcw className="w-4 h-4" />
-  </button>
-</div>
+          <button
+            className="zoom-btn reset"
+            onClick={resetZoom}
+            aria-label="Reset zoom"
 
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
 
         <ResumeDownload
           disabled={false}

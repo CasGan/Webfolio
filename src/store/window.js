@@ -15,10 +15,12 @@ export const isMobile = () =>
 
 export const debounce = (fn, delay = 100) => {
   let timer;
-  return (...args) => {
+  const debounced = (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+  debounced.cancel = () => clearTimeout(timer);
+  return debounced; 
 };
 
 const getCenteredPosition = (width, height) => ({
@@ -26,7 +28,7 @@ const getCenteredPosition = (width, height) => ({
   left: Math.max((window.innerWidth - width) / 2, WINDOW_MARGIN),
 });
 
-const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+export const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
 const useWindowStore = create(
   immer((set, get) => ({
@@ -69,7 +71,8 @@ const useWindowStore = create(
         if (!win) return;
 
         win.isOpen = true;
-        win.zIndex = state.nextZIndex++;
+        win.zIndex = state.nextZIndex;
+        state.nextZIndex += 1; 
         win.data = data ?? win.data;
 
         if (get().isMobile) {
