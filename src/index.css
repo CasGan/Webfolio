@@ -37,8 +37,40 @@ body {
 }
 .window-content {
   flex: 1;
-  min-height: 0; /* REQUIRED for flex layout */ 
+  min-height: 0; /* REQUIRED for flex layout */
   -webkit-overflow-scrolling: touch;
+}
+@layer components {
+  .zoom-controls {
+    @apply flex items-center gap-1 text-gray-400;
+  }
+
+  .zoom-btn {
+    @apply p-1 rounded
+           hover:bg-gray-200/70
+           transition-colors
+           cursor-pointer;
+  }
+  .zoom-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .zoom-btn:active {
+    transform: scale(0.96);
+  }
+
+  .zoom-value {
+    @apply text-xs font-medium
+           tabular-nums
+           select-none
+           min-w-[38px]
+           text-center
+           text-gray-500;
+  }
+
+  .zoom-btn.reset {
+    @apply ml-1;
+  }
 }
 
 @theme {

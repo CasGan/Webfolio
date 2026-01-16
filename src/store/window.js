@@ -133,7 +133,7 @@ const useWindowStore = create(
         windowKeys.forEach((key) => {
           const win = state.windows[key];
 
-          if (get().isMobile()) {
+          if (get().isMobile) {
             win.top = 0;
             win.left = 0;
             win.width = window.innerWidth;

@@ -3,7 +3,7 @@ import { WindowControls } from "#components/index.js";
 import WindowWrapper from "#hoc/WindowWrapper.jsx";
 import ResumeDownload from "#components/ResumeDownload.jsx";
 import { debounce } from "#store/window";
-import { AlertCircle, Loader,  } from "lucide-react";
+import { AlertCircle, Loader, RotateCcw, Plus, Minus } from "lucide-react";
 import { pdfjs, Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -16,7 +16,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 const PDF_PATH = "/files/resume.pdf";
 
 // Zoom constants (hard-capped for performance)
-const ZOOM_MIN = 0.9;
+const ZOOM_MIN = 0.95;
 const ZOOM_MAX = 2.25;
 const ZOOM_STEP = 0.15;
 
@@ -40,6 +40,7 @@ const Resume = () => {
 
     const computeWidth = () => {
       const w = el.clientWidth;
+      
       const next = w > 0 ? Math.min(w * 0.92, 620) : 620;
       setPageWidth((prev) => (prev === next ? prev : next));
     };
@@ -66,14 +67,11 @@ const Resume = () => {
   const handleLoadError = (err) => {
     console.error("Failed to load PDF:", err);
     setIsLoading(false);
-    setLoadError(
-      "Failed to load resume. Please try downloading it instead."
-    );
+    setLoadError("Failed to load resume. Please try downloading it instead.");
   };
 
   // Pointer-agnostic zoom handlers
-  const zoomIn = () =>
-    setZoom((z) => clamp(z + ZOOM_STEP, ZOOM_MIN, ZOOM_MAX));
+  const zoomIn = () => setZoom((z) => clamp(z + ZOOM_STEP, ZOOM_MIN, ZOOM_MAX));
 
   const zoomOut = () =>
     setZoom((z) => clamp(z - ZOOM_STEP, ZOOM_MIN, ZOOM_MAX));
@@ -87,12 +85,28 @@ const Resume = () => {
         <h2 className="font-medium text-sm text-gray-500">Resume.pdf</h2>
 
         {/* Zoom controls (buttons are additive, not required for gestures) */}
-        <div className="flex items-center gap-2 text-xs">
-          <button onPointerDown={zoomOut}>−</button>
-          <span>{Math.round(zoom * 100)}%</span>
-          <button onPointerDown={zoomIn}>+</button>
-          <button onPointerDown={resetZoom}>Reset</button>
-        </div>
+       <div className="zoom-controls">
+  <button className="zoom-btn" onPointerDown={zoomOut}>
+    <Minus className="w-4 h-4" />
+  </button>
+
+  <span className="zoom-value">
+    {Math.round(zoom * 100)}%
+  </span>
+
+  <button className="zoom-btn" onPointerDown={zoomIn}>
+    <Plus className="w-4 h-4" />
+  </button>
+
+  <button
+    className="zoom-btn reset"
+    onPointerDown={resetZoom}
+    aria-label="Reset zoom"
+  >
+    <RotateCcw className="w-4 h-4" />
+  </button>
+</div>
+
 
         <ResumeDownload
           disabled={false}
@@ -103,10 +117,7 @@ const Resume = () => {
 
       <div className="window-content overflow-y-auto">
         {/* Scrollable viewport (panning happens here) */}
-        <div
-          className="resume-content p-4 bg-gray-50"
-          ref={containerRef}
-        >
+        <div className="resume-content p-4 bg-gray-50" ref={containerRef}>
           {isLoading && !loadError && (
             <div className="pdf-state pdf-loading">
               <Loader className="animate-spin" />
@@ -122,10 +133,7 @@ const Resume = () => {
           )}
 
           {/* Stage grows as zoom increases */}
-          <div
-            className="mx-auto"
-            style={{ width: pageWidth * zoom }}
-          >
+          <div className="mx-auto" style={{ width: pageWidth * zoom }}>
             <Document
               file={PDF_PATH}
               onLoadSuccess={handleLoadSuccess}
